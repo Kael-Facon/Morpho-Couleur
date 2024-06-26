@@ -37,6 +37,8 @@ target_link_libraries(morpho_couleur PUBLIC OpenGL::GL)
 find_package(glfw3 CONFIG REQUIRED)
 target_link_libraries(morpho_couleur PUBLIC glfw)
 
+target_include_directories(morpho_couleur PRIVATE ${OpenCV_INCLUDE_DIRS})
+
 
 ## FOR DEBUG
 #
