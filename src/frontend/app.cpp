@@ -12,115 +12,110 @@ App::App(const char* filename) {
 
 void App::Windows()
 {
-    ImGui::Begin("Viewport");
-    ImGui::Text("pointer = %x", env.render_image);
-    ImGui::SameLine();
-    ImGui::Text("size = %d x %d", env.image.width, env.image.height);
-    ImGui::Image((void*)(intptr_t)env.render_image,
-                 ImVec2(static_cast<float>(env.image.width), static_cast<float>(env.image.height)));
+    ImGui::Begin("Actions");
     ImGui::End();
 
-    App::TreeNode();
+    ImGui::Begin("Color Options");
+    ColorOptions();
+    ImGui::End();
 
-    ImGui::Begin("Actions");
+    ImGui::Begin("Viewport");
 
-    // env.image.render(env.scene, true);
-    // env.image.save_as_ppm("test.ppm");
+    ImGuiIO &io = ImGui::GetIO();
+    ImVec2 pos = ImGui::GetCursorScreenPos();
+    ImGui::Image((void*)(intptr_t)env.render_image,
+                 ImVec2(static_cast<float>(env.image.width), static_cast<float>(env.image.height)));
 
-    if (ImGui::Button("Render")) { env.render(); }
+    if (ImGui::Button("Save Render"))
+        ImGui::OpenPopup("save_render");
+    if (ImGui::BeginPopup("save_render"))
+    {
+        static char filename[128] = "";
+        ImGui::InputText("File Name", filename, IM_ARRAYSIZE(filename));
+        ImGui::SameLine();
+        if (ImGui::Button("Save file"))
+            env.image.save_as_ppm("../test/" + string(filename) + ".ppm");
+        ImGui::EndPopup();
+    }
 
-    static float c1 = 1.00f;
-    if (ImGui::Button("Move Camera X")) { env.move_camera(); }
     ImGui::SameLine();
-    ImGui::DragFloat("Cam X", &c1, 0.005f);
-
-    static float c2 = 1.00f;
-    if (ImGui::Button("Move Camera Y")) { env.move_camera(); }
-    ImGui::SameLine();
-    ImGui::DragFloat("Cam Y", &c2, 0.005f);
-
-    static float c3 = 1.00f;
-    if (ImGui::Button("Move Camera Z")) { env.move_camera(); }
-    ImGui::SameLine();
-    ImGui::DragFloat("Cam Z", &c3, 0.005f);
-
-    static float v1 = 1.00f;
-    if (ImGui::Button("Move X")) { env.move_x(v1); }
-    ImGui::SameLine();
-    ImGui::DragFloat("X", &v1, 0.005f);
-
-    static float v2 = 1.00f;
-    if (ImGui::Button("Move Y")) { env.move_y(v2); }
-    ImGui::SameLine();
-    ImGui::DragFloat("Y", &v2, 0.005f);
-
-    static float v3 = 1.00f;
-    if (ImGui::Button("Move Z")) { env.move_z(v3); }
-    ImGui::SameLine();
-    ImGui::DragFloat("Z", &v3, 0.005f);
-
-    static float radius = 1.00f;
-    ImGui::DragFloat("Radius", &radius, 0.005f);
-    if (ImGui::Button("Grow")) { env.grow(radius); }
-    ImGui::SameLine();
-    if (ImGui::Button("Shrink")) { env.shrink(radius); }
-
-
-    if (ImGui::Button("Save Render")) { env.image.save_as_ppm("../test/result.ppm"); }
+    Inputs(io, pos);
 
     ImGui::End();
 
 //    ImGui::ShowDemoWindow();
 }
 
-void App::TreeNode() {
-    ImGui::Begin("Tree");
-    static ImGuiTreeNodeFlags base_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
-    static bool align_label_with_current_x_position = false;
-    if (ImGui::TreeNode("Objects"))
-    {
-        static int selection_mask = (1 << 2);
-        int node_clicked = -1;
-        for (int i = 0; i < env.scene.objects.size(); i++)
-        {
-            ImGuiTreeNodeFlags node_flags = base_flags;
-            const bool is_selected = (selection_mask & (1 << i)) != 0;
-            if (is_selected)
-                node_flags |= ImGuiTreeNodeFlags_Selected;
-            node_flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
-            string obj_type = typeid(*env.scene.objects[i]).name();
-            ImGui::TreeNodeEx((void*)(intptr_t)i, node_flags, "%d Object %s", i, obj_type.c_str());
-            if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) {
-                node_clicked = i;
-                // BEHAVIOR IS HERE
-                env.change_focus(i, env.scene.objects[i]);
-            }
-        }
-        if (node_clicked != -1)
-            selection_mask = (1 << node_clicked);
-        if (align_label_with_current_x_position)
-            ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
-        ImGui::TreePop();
+void App::ColorOptions() {
+    static bool alpha_preview = true;
+    static bool alpha_half_preview = false;
+    static bool drag_and_drop = true;
+    static bool options_menu = true;
+    static bool hdr = false;
+    ImGuiColorEditFlags misc_flags = (hdr ? ImGuiColorEditFlags_HDR : 0) | (drag_and_drop ? 0 : ImGuiColorEditFlags_NoDragDrop) | (alpha_half_preview ? ImGuiColorEditFlags_AlphaPreviewHalf : (alpha_preview ? ImGuiColorEditFlags_AlphaPreview : 0)) | (options_menu ? 0 : ImGuiColorEditFlags_NoOptions);
+
+    Color cc = Color(1.0,1.0,1.0);
+    static ImVec4 color = ImVec4(cc.r, cc.g, cc.b, 255.0f / 255.0f);
+    static bool side_preview = true;
+    static int display_mode = 0;
+    static int picker_mode = 0;
+    ImGui::Checkbox("With Side Preview", &side_preview);
+
+    ImGui::Combo("Display Mode", &display_mode, "Auto/Current\0None\0RGB Only\0HSV Only\0Hex Only\0");
+    ImGuiColorEditFlags flags = misc_flags;
+    if (!side_preview)     flags |= ImGuiColorEditFlags_NoSidePreview;
+    if (picker_mode == 1)  flags |= ImGuiColorEditFlags_PickerHueBar;
+    if (picker_mode == 2)  flags |= ImGuiColorEditFlags_PickerHueWheel;
+    if (display_mode == 1) flags |= ImGuiColorEditFlags_NoInputs;
+    if (display_mode == 2) flags |= ImGuiColorEditFlags_DisplayRGB;
+    if (display_mode == 3) flags |= ImGuiColorEditFlags_DisplayHSV;
+    if (display_mode == 4) flags |= ImGuiColorEditFlags_DisplayHex;
+    ImGui::ColorPicker4("MyColor##4", (float*)&color, flags);
+
+
+    if (ImGui::Button("Update Color")) {
+        // Update Color
     }
-    PrintObjInfo();
-    ImGui::End();
 }
 
-void App::PrintObjInfo() {
-    string obj_type = env.focus_obj.obj_type;
-    string text = "type : " + obj_type + "\n";
-    if (obj_type == "Sphere")
-        text += "Center : " + env.focus_obj.origin.to_string() + "\n"
-                + "Radius : " + std::to_string(env.focus_obj.radius);
-    if (obj_type == "Plane")
-        text += "Origin : " + env.focus_obj.origin.to_string() + "\n"
-                + "Normal : " + env.focus_obj.normal_.to_string() + "\n"
-                + "Grille : " + std::to_string(env.focus_obj.grille);
-    if (obj_type == "Triangle")
-        text += "A : " + env.focus_obj.a.to_string() + "\n"
-                "B : " + env.focus_obj.b.to_string() + "\n"
-                "C : " + env.focus_obj.c.to_string() + "\n"
-                + "Normal : " + env.focus_obj.normal_.to_string();
-//    if (obj_type == "Mesh")
-    ImGui::Text(text.c_str());
+void App::PrintObjInfo() const {
+    ImGui::Text("Nothing to Print");
+}
+
+void App::Inputs(const ImGuiIO& io, ImVec2 pos) {
+    float region_sz = 32.0f;
+    float region_x = io.MousePos.x - pos.x - region_sz * 0.5f;
+    float region_y = io.MousePos.y - pos.y - region_sz * 0.5f;
+    if (region_x < 0.0f) { return; }
+    else if (region_x > 1280 - region_sz) { return; }
+    if (region_y < 0.0f) { return; }
+    else if (region_y > 720 - region_sz) { return; }
+    ImGui::Text("Min: (%.2f, %.2f)", region_x, region_y);
+    ImGui::SameLine();
+    ImGui::Text("Mouse down:");
+    for (int i = 0; i < IM_ARRAYSIZE(io.MouseDown); i++) {
+        if (io.MouseDownDuration[i] > 0.01)
+            return;
+        if (ImGui::IsMouseDown(i)) {
+            env.render();
+        }
+    }
+    ImGui::SameLine();
+    ImGui::Text("Keys down:");
+    struct funcs {
+        static bool IsLegacyNativeDupe(ImGuiKey key) {
+            return key >= 0 && key < 512 && ImGui::GetIO().KeyMap[key] != -1;
+        }
+    };
+
+    auto start_key = (ImGuiKey)0;
+    for (ImGuiKey key = start_key; key < ImGuiKey_NamedKey_END; key = (ImGuiKey)(key + 1)) {
+        if (funcs::IsLegacyNativeDupe(key) || !ImGui::IsKeyDown(key))
+            continue;
+        ImGui::SameLine(); ImGui::Text((key < ImGuiKey_NamedKey_BEGIN) ? "\"%s\"" : "\"%s\" %d", ImGui::GetKeyName(key), key);
+//        if (key == 513) { // Left Arrow
+//            env.scene.move_camera_y(-15);
+//            env.render();
+//        }
+    }
 }
