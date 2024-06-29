@@ -3,12 +3,25 @@ project(morpho_couleur)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(morpho_couleur main.cpp
+add_executable(morpho_couleur 
+        # Main        
+        main.cpp
+        
+        ## Backend
         src/backend/utils.hh
+        
+        ### Backend Shapes
         src/backend/shapes/shape.hh
         src/backend/shapes/diamond.hh
         src/backend/shapes/disk.hh
         src/backend/shapes/square.hh
+
+        ### Backend Image
+        src/backend/image/image_io.hh
+        src/backend/image/image_io.cpp
+        src/backend/image/image.hh
+        src/backend/image/image.cpp
+
         # src/frontend/imgui/imconfig.h
         # src/frontend/imgui/imgui.cpp
         # src/frontend/imgui/imgui.h

@@ -22,6 +22,13 @@ typedef uint8_t* __restrict__ __attribute__((aligned(TL_IMAGE_ALIGNMENT))) GRAY8
 typedef uint8_t* __restrict__ __attribute__((aligned(TL_IMAGE_ALIGNMENT))) RGB8;
 typedef uint8_t* __restrict__ __attribute__((aligned(TL_IMAGE_ALIGNMENT))) HSV8;
 
+struct RGB24
+{
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
+};
+
 /**
  * Gray scale image with pixels on 8 bits.
  * @author J. Fabrizio

@@ -85,7 +85,8 @@ bool save_image(rgb24_image &image, const char *filename) {
   return true;
 }
 
-rgb24_image *load_image(const char* filename) {
+rgb24_image *load_image(const char* filename)
+{
   tga_header header;
   rgb24_image *image;
   uint8_t *buffer_bgr;
