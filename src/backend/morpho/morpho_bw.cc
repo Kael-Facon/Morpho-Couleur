@@ -1,5 +1,6 @@
-#include "disk.hh"
 #include <stdint.h>
+
+#include "../shapes/disk.hh"
 
 uint8_t dilation(uint8_t* buffer, int x, int y, int width, int height, int stride)
 {

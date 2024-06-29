@@ -21,6 +21,19 @@ gray8_image::gray8_image(int _sx, int _sy) {
     pixels = (GRAY8)aligned_alloc(TL_IMAGE_ALIGNMENT, length);
 }
 
+gray8_image *rgb_to_gray(const rgb24_image& rgb_im)
+{
+    gray8_image *img = new gray8_image(rgb_im.sx, rgb_im.sy);
+
+    RGB24 *rgb_pixels = (RGB24*) rgb_im.pixels;
+
+    for (int i = 0; i < img->length; i++)
+        img->pixels[i] = 0.3 * rgb_pixels[i].r + 0.6 * rgb_pixels[i].g + 0.1 * rgb_pixels[i].b;
+    
+    return img;
+}
+
+
 gray8_image::~gray8_image() {
   free(pixels);
 }
@@ -54,6 +67,24 @@ rgb24_image::rgb24_image(const gray8_image& r, const gray8_image& g, const gray8
         pixels[i * 3] = r.pixels[i];
         pixels[i * 3 + 1] = g.pixels[i];
         pixels[i * 3 + 2] = b.pixels[i];
+    }
+}
+
+rgb24_image::rgb24_image(const gray8_image& gray)
+{
+    sx = gray.sx;
+    sy = gray.sy;
+
+    length = sx*sy*3;
+    pixels = (RGB8)aligned_alloc(TL_IMAGE_ALIGNMENT, length);
+
+    RGB24 *rgb_pixels = (RGB24*) pixels;
+
+    for (int i = 0; i < gray.length; i++)
+    {
+        rgb_pixels[i].r = gray.pixels[i];
+        rgb_pixels[i].g = gray.pixels[i];
+        rgb_pixels[i].b = gray.pixels[i];
     }
 }
 

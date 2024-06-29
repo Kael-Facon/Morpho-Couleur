@@ -84,6 +84,7 @@ class rgb24_image {
             */
             rgb24_image(int sx, int sy);
             rgb24_image(const gray8_image& r, const gray8_image& g, const gray8_image& b);
+            rgb24_image(const gray8_image& gray);
             ~rgb24_image();
 
             /**
@@ -118,6 +119,8 @@ class rgb24_image {
 
 void convert_hsv(uint8_t* r_, uint8_t* g_, uint8_t* b_);
 void convert_rgb(uint8_t* h_, uint8_t* s_, uint8_t* v_);
+gray8_image *rgb_to_gray(const rgb24_image& rgb);
+
 
 class hsv24_image {
 
