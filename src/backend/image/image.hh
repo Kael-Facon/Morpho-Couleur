@@ -13,7 +13,7 @@
 #include <cstdint>
 
 #define IMAGE_NB_LEVELS 256
-#define IMAGE_MAX_LEVEL 255
+#define IMAGE_MAX_LEVEL IMAGE_NB_LEVELS - 1
 #define TL_IMAGE_ALIGNMENT 64
 
 namespace tifo {

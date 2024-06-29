@@ -4,6 +4,11 @@ project(morpho_couleur)
 set(CMAKE_CXX_STANDARD 17)
 
 add_executable(morpho_couleur main.cpp
+        src/backend/utils.hh
+        src/backend/shapes/shape.hh
+        src/backend/shapes/diamond.hh
+        src/backend/shapes/disk.hh
+        src/backend/shapes/square.hh
         # src/frontend/imgui/imconfig.h
         # src/frontend/imgui/imgui.cpp
         # src/frontend/imgui/imgui.h
