@@ -68,7 +68,7 @@ int main(int, char**)
 #endif
 
     // Create window with graphics context
-    GLFWwindow* window = glfwCreateWindow(1600, 810, "Blender Eco ++", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(1920, 1080, "Blender Eco ++", nullptr, nullptr);
     if (window == nullptr)
         return 1;
     glfwMakeContextCurrent(window);
@@ -127,8 +127,8 @@ int main(int, char**)
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     //TODO CODE HERE
-    auto app = App();
-    IM_ASSERT(app.env.image.width != 0);
+    auto app = App("../data/sunset.ppm");
+    IM_ASSERT(app.env.image->width != 0);
     //TODO CODE HERE
 
     // Main loop

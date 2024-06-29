@@ -13,12 +13,11 @@
 class Env {
 public:
     GLuint render_image{};
-    Image image;
+    Image *image;
 
     Env();
     explicit Env(const char* filename);
 
     void create_texture();
-    void change_bg(const std::string& name);
     void render();
 };

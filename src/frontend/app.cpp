@@ -24,7 +24,7 @@ void App::Windows()
     ImGuiIO &io = ImGui::GetIO();
     ImVec2 pos = ImGui::GetCursorScreenPos();
     ImGui::Image((void*)(intptr_t)env.render_image,
-                 ImVec2(static_cast<float>(env.image.width), static_cast<float>(env.image.height)));
+                 ImVec2(static_cast<float>(env.image->width), static_cast<float>(env.image->height)));
 
     if (ImGui::Button("Save Render"))
         ImGui::OpenPopup("save_render");
@@ -34,7 +34,7 @@ void App::Windows()
         ImGui::InputText("File Name", filename, IM_ARRAYSIZE(filename));
         ImGui::SameLine();
         if (ImGui::Button("Save file"))
-            env.image.save_as_ppm("../test/" + string(filename) + ".ppm");
+            env.image->save_as_ppm("../test/" + string(filename) + ".ppm");
         ImGui::EndPopup();
     }
 

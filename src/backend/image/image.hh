@@ -8,22 +8,31 @@
 
 #define PI 3.14159265f
 
+enum IMAGE_TYPE {
+    RGB,
+    HSV,
+    GRAY,
+    NONE
+};
+
 class Image {
 public:
     int width = 0;
     int height = 0;
+    IMAGE_TYPE image_type = IMAGE_TYPE::RGB;
     std::vector<std::vector<Color>> data;
     unsigned char* char_data;
-    std::vector<std::vector<bool>> selected;
 
-    Image()= default;
+    Image();
     Image(int width_, int height_);
 
-    static Color bg_color(Image *bg, Vector3 dir);
     void update_char_data(unsigned int i, unsigned int j);
     void update_char_data(unsigned int i, unsigned int j, Color c);
-    void render(Image *bg);
-    void render_thread(Image *bg, int start, int end);
+
+    void convert_image(IMAGE_TYPE new_type);
+    void convert_thread(IMAGE_TYPE new_type, int start, int end);
+
+    std::vector<std::vector<unsigned int>> get_histogram();
 
     void save_as_ppm(const std::string& pathname);
 };

@@ -38,6 +38,7 @@ add_executable(morpho_couleur main.cpp
         src/backend/image/image.hh
         src/backend/image/image.cpp
         src/backend/intersection/intersection.cpp
+        src/backend/utils/color_hsv.hh
 )
 
 find_package(OpenGL REQUIRED)
