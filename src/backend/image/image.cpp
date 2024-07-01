@@ -1,9 +1,9 @@
-#include <minmax.h>
+#include <algorithm>
 #include "image.hh"
 
 static float aspect_ratio = 16.0f / 9.0f;
 static int default_width = 1600;
-static int default_height = static_cast<int>(static_cast<float>(default_width) / aspect_ratio);
+static int default_height = 900; //static_cast<int>(static_cast<float>(default_width) / aspect_ratio);
 
 Image::Image()
 {
@@ -43,9 +43,48 @@ void Image::update_char_data(unsigned int i, unsigned int j, Color c) {
     char_data[k+2] = static_cast<unsigned char>(c.b * 255);
 }
 
+void Image::update_char_data()
+{
+    for (unsigned int j = 0; j < height; ++j)
+        for (unsigned int i = 0; i < width; ++i)
+            update_char_data(i , j);
+}
+
+void Image::update_char_data(unsigned char *data_, bool gray)
+{
+    if (gray)
+        for (unsigned int j = 0; j < height; ++j)
+            for (unsigned int i = 0; i < width; ++i)
+            {
+                char_data[(i + j * width) * 3] = data_[(i + j * width)];
+                char_data[(i + j * width) * 3 + 1] = data_[(i + j * width)];
+                char_data[(i + j * width) * 3 + 2] = data_[(i + j * width)];
+            }
+
+    else
+        for (unsigned int j = 0; j < height; ++j)
+            for (unsigned int i = 0; i < width; ++i)
+            {
+                char_data[(i + j * width) * 3] = data_[(i + j * width) * 3];
+                char_data[(i + j * width) * 3 + 1] = data_[(i + j * width) * 3 + 1];
+                char_data[(i + j * width) * 3 + 2] = data_[(i + j * width) * 3 + 2];
+            }
+}
+
+void Image::update_color_data()
+{
+    for (unsigned int j = 0; j < height; ++j)
+        for (unsigned int i = 0; i < width; ++i)
+        {
+            data.at(i).at(j).r = char_data[(i + j * width) * 3] / 255.f;
+            data.at(i).at(j).g = char_data[(i + j * width) * 3 + 1] / 255.f;
+            data.at(i).at(j).b = char_data[(i + j * width) * 3 + 2] / 255.f;
+        }
+}
+
 Color rgb_to_hsv(Color c) {
-    float max_color = max(max(c.r, c.g), c.b);
-    float min_color = min(min(c.r, c.g), c.b);
+    float max_color = std::max(std::max(c.r, c.g), c.b);
+    float min_color = std::min(std::min(c.r, c.g), c.b);
     float max_min = max_color - min_color;
     Color hsv_c = Color();
     if (max_min == 0)
@@ -137,7 +176,8 @@ void Image::convert_thread(IMAGE_TYPE new_type, int start, int end)
     }
 }
 
-void Image::convert_image(IMAGE_TYPE new_type) {
+void Image::convert_image(IMAGE_TYPE new_type)
+{
     if (new_type == image_type || new_type == NONE)
         return;
 
@@ -162,7 +202,8 @@ void Image::convert_image(IMAGE_TYPE new_type) {
         t.join();
 }
 
-std::vector<std::vector<unsigned int>> Image::get_histogram() {
+std::vector<std::vector<unsigned int>> Image::get_histogram()
+{
     std::vector<std::vector<unsigned int>> histogram(
             3,
             std::vector<unsigned int>(255, 0.0)
@@ -175,6 +216,37 @@ std::vector<std::vector<unsigned int>> Image::get_histogram() {
         }
     }
     return histogram;
+}
+
+void Image::to_gray()
+{
+    to_gray(0.25, 0.6, 0.15);
+}
+
+void Image::to_gray(float r_ratio, float g_ratio, float b_ratio)
+{
+    float total_ratio = r_ratio + g_ratio + b_ratio;
+    r_ratio /= total_ratio;
+    g_ratio /= total_ratio;
+    b_ratio /= total_ratio;
+
+    for (int j = 0; j < height; ++j)
+        for (int i = 0; i < width; ++i)
+            data[i][j].to_gray(r_ratio, g_ratio, b_ratio);
+}
+
+uint8_t* Image::get_channel(IMAGE_CHANNEL chan)
+{
+    if (chan > IMAGE_CHANNEL::B)
+        return nullptr;
+
+    uint8_t *channel = (uint8_t *) malloc(width * height * sizeof(uint8_t)); // sizeof == 1
+
+    for (int j = 0; j < height; ++j)
+        for (int i = 0; i < width; ++i)
+            channel[i + j * width] = char_data[(i + j * width) * 3 + (int) chan];
+
+    return channel;
 }
 
 void Image::save_as_ppm(const std::string& pathname)

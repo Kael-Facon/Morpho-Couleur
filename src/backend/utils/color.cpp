@@ -1,5 +1,14 @@
 #include "color.hh"
 
+void Color::to_gray(float r_ratio, float g_ratio, float b_ratio)
+{
+    float gray = r * r_ratio + g * g_ratio + b * b_ratio;
+
+    r = gray;
+    g = gray;
+    b = gray;
+}
+
 //Operator
 Color& Color::operator=(const Color& col)
 {

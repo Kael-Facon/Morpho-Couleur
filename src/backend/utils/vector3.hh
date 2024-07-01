@@ -105,9 +105,9 @@ inline Vector3 operator/(float f, const Vector3& v)
 inline bool operator==(const Vector3 &v1, const Vector3 &v2) 
 {
     static const float delta = 0.001;
-    return abs_(v1.x - v2.x) < delta &&
-           abs_(v1.y - v2.y) < delta &&
-           abs_(v1.z - v2.z) < delta;
+    return abs<float>(v1.x - v2.x) < delta &&
+           abs<float>(v1.y - v2.y) < delta &&
+           abs<float>(v1.z - v2.z) < delta;
 }
 
 inline bool operator!=(const Vector3 &v1, const Vector3 &v2) 

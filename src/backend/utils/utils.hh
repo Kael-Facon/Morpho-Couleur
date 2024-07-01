@@ -1,5 +1,10 @@
 #pragma once
 
-inline float sqr(float x) { return x * x; }
-inline float discr(float a, float b, float c) { return sqr(b) - (4 * a * c); }
-inline float abs_(float x) { return x < 0 ? -x : x; }
+template<typename T>
+inline T sqr(T x) { return x * x; }
+
+template<typename T>
+inline T discr(T a, T b, T c) { return sqr(b) - (4 * a * c); }
+
+template<typename T>
+inline T abs(T x) { return x < 0 ? -x : x; }

@@ -22,6 +22,8 @@ class Color {
             cap_color(&b);
         }
 
+    void to_gray(float r_ratio, float g_ratio, float b_ratio);
+
     // Operator
     Color& operator=(const Color& col);
     Color& operator+=(const Color& col);

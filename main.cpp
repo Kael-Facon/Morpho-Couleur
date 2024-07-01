@@ -19,6 +19,10 @@
 
 //MY INCLUDES
 #include "src/frontend/app.hh"
+#include "src/backend/morpho/method.hh"
+#include "src/backend/shapes/disk.hh"
+#include "src/backend/shapes/diamond.hh"
+#include "src/backend/shapes/square.hh"
 
 // [Win32] Our example includes a copy of glfw3.lib pre-compiled with VS2010 to maximize ease of testing and compatibility with old VS compilers.
 // To link with VS2010-era libraries, VS2015+ requires linking with legacy_stdio_definitions.lib, which we do using this pragma.
@@ -129,6 +133,13 @@ int main(int, char**)
     //TODO CODE HERE
     auto app = App("../data/sunset.ppm");
     IM_ASSERT(app.env.image->width != 0);
+    app.env.image->to_gray();
+    app.env.image->update_char_data();
+    uint8_t* gray_buffer = app.env.image->get_channel(R);
+
+    create_disk(); create_square(); create_diamond();
+    uint8_t* res = open_morpho(gray_buffer, gray_buffer, app.env.image->width, app.env.image->height, morpho_diamond);
+    app.env.image->update_char_data(res, true);
     //TODO CODE HERE
 
     // Main loop
