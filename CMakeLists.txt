@@ -51,8 +51,10 @@ add_executable(morpho_couleur main.cpp
         src/backend/shapes/diamond.hh
 
         ## morpho
-        src/backend/morpho/method.hh
-        src/backend/morpho/method.cpp
+        src/backend/morpho/morpho_bw.hh
+        src/backend/morpho/morpho_bw.cpp
+        src/backend/morpho/morpho_col1.hh
+        src/backend/morpho/morpho_col1.cpp
 )
 
 find_package(OpenGL REQUIRED)

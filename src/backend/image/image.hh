@@ -48,9 +48,21 @@ public:
     void to_gray();
     void to_gray(float r_ratio, float g_ratio, float b_ratio);
 
+    uint8_t* get_gray() const;
+    uint8_t* get_gray(float r_ratio, float g_ratio, float b_ratio) const;
+
+    uint8_t* get_char_data_copy() const;
+
     uint8_t* get_channel(IMAGE_CHANNEL chan);
 
     void save_as_ppm(const std::string& pathname);
+};
+
+struct rgb24
+{
+    uint8_t* r;
+    uint8_t* g;
+    uint8_t* b;
 };
 
 Image *load_image(const std::string& path_name);

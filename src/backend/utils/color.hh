@@ -8,7 +8,8 @@ inline void cap_color(float *value)
     (*value) = (*value) < 0.0f ? 0.0f: (*value);
 }
 
-class Color {
+class Color
+{
     public :
         float r, g, b;
 
@@ -23,6 +24,7 @@ class Color {
         }
 
     void to_gray(float r_ratio, float g_ratio, float b_ratio);
+    uint8_t get_gray(float r_ratio, float g_ratio, float b_ratio) const;
 
     // Operator
     Color& operator=(const Color& col);

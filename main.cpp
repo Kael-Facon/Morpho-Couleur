@@ -19,7 +19,7 @@
 
 //MY INCLUDES
 #include "src/frontend/app.hh"
-#include "src/backend/morpho/method.hh"
+#include "src/backend/morpho/morpho_col1.hh"
 #include "src/backend/shapes/disk.hh"
 #include "src/backend/shapes/diamond.hh"
 #include "src/backend/shapes/square.hh"
@@ -131,15 +131,22 @@ int main(int, char**)
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     //TODO CODE HERE
-    auto app = App("../data/sunset.ppm");
+    auto app = App("../data/morpho_couleur.ppm");
+    //auto app = App("../data/sunset.ppm");
     IM_ASSERT(app.env.image->width != 0);
-    app.env.image->to_gray();
-    app.env.image->update_char_data();
-    uint8_t* gray_buffer = app.env.image->get_channel(R);
 
     create_disk(); create_square(); create_diamond();
-    uint8_t* res = open_morpho(gray_buffer, gray_buffer, app.env.image->width, app.env.image->height, morpho_diamond);
-    app.env.image->update_char_data(res, true);
+    uint8_t* res = close_morpho_col1(*app.env.image, morpho_disk);
+    // uint8_t* test_gray = app.env.image->get_gray();
+    // uint8_t* res = erosion_col1(app.env.image->get_char_data_copy(), test_gray, app.env.image->width, app.env.image->height, morpho_disk);
+    app.env.image->update_char_data(res);
+
+    // res = dilation_col1(app.env.image->get_char_data_copy(), app.env.image->get_gray(), app.env.image->width, app.env.image->height, morpho_disk);
+    // app.env.image->update_char_data(res);
+
+    app.env.image->update_color_data();
+    app.env.image->save_as_ppm("ero_dil.ppm");
+
     //TODO CODE HERE
 
     // Main loop

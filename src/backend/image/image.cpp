@@ -56,7 +56,7 @@ void Image::update_char_data(unsigned char *data_, bool gray)
         for (unsigned int j = 0; j < height; ++j)
             for (unsigned int i = 0; i < width; ++i)
             {
-                char_data[(i + j * width) * 3] = data_[(i + j * width)];
+                char_data[(i + j * width) * 3 + 0] = data_[(i + j * width)];
                 char_data[(i + j * width) * 3 + 1] = data_[(i + j * width)];
                 char_data[(i + j * width) * 3 + 2] = data_[(i + j * width)];
             }
@@ -65,7 +65,7 @@ void Image::update_char_data(unsigned char *data_, bool gray)
         for (unsigned int j = 0; j < height; ++j)
             for (unsigned int i = 0; i < width; ++i)
             {
-                char_data[(i + j * width) * 3] = data_[(i + j * width) * 3];
+                char_data[(i + j * width) * 3 + 0] = data_[(i + j * width) * 3];
                 char_data[(i + j * width) * 3 + 1] = data_[(i + j * width) * 3 + 1];
                 char_data[(i + j * width) * 3 + 2] = data_[(i + j * width) * 3 + 2];
             }
@@ -233,6 +233,42 @@ void Image::to_gray(float r_ratio, float g_ratio, float b_ratio)
     for (int j = 0; j < height; ++j)
         for (int i = 0; i < width; ++i)
             data[i][j].to_gray(r_ratio, g_ratio, b_ratio);
+}
+
+uint8_t* Image::get_gray() const
+{
+    return get_gray(0.25, 0.6, 0.15);
+}
+
+uint8_t* Image::get_gray(float r_ratio, float g_ratio, float b_ratio) const
+{
+    uint8_t* gray_buffer = (uint8_t*) malloc(width * height);
+
+    float total_ratio = r_ratio + g_ratio + b_ratio;
+    r_ratio /= total_ratio;
+    g_ratio /= total_ratio;
+    b_ratio /= total_ratio;
+
+    for (int j = 0; j < height; ++j)
+        for (int i = 0; i < width; ++i)
+            gray_buffer[j * width + i] = data[i][j].get_gray(r_ratio, g_ratio, b_ratio);
+        
+    return gray_buffer;
+}
+
+uint8_t* Image::get_char_data_copy() const
+{
+    uint8_t* color_buffer = (uint8_t*) malloc(width * height * sizeof(uint8_t) * 3);
+
+    for (unsigned int j = 0; j < height; ++j)
+            for (unsigned int i = 0; i < width; ++i)
+            {
+                color_buffer[(i + j * width) * 3 + 0] = char_data[(i + j * width) * 3 + 0];
+                color_buffer[(i + j * width) * 3 + 1] = char_data[(i + j * width) * 3 + 1];
+                color_buffer[(i + j * width) * 3 + 2] = char_data[(i + j * width) * 3 + 2];
+            }
+        
+    return color_buffer;
 }
 
 uint8_t* Image::get_channel(IMAGE_CHANNEL chan)
