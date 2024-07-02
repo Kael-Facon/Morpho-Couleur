@@ -1,11 +1,6 @@
-#include <stdint.h>
-
-#include "morpho_bw.hh"
-#include "../shapes/shape.hh"
+#include "method.hh"
 
 // Generic method for erosion and dilation
-////////////////////////////////////////////////////////////////
-
 bool erosion_(uint8_t buffer_val, uint8_t value) { return buffer_val < value; }
 bool dilation_(uint8_t buffer_val, uint8_t value) { return buffer_val > value; }
 
@@ -61,52 +56,4 @@ uint8_t* get_morpho(uint8_t* src_buffer, uint8_t* gray_buffer, int width, int he
     free(src_buffer);
 
     return res_buffer;
-}
-
-/////////////////////////////////////////////////
-
-uint8_t* erosion_col1(const Image& img, bool morpho_shape[MORPHO_SIZE][MORPHO_SIZE])
-{
-    uint8_t* gray_buffer = img.get_gray(); // TODO free
-    uint8_t* color_buffer = img.get_char_data_copy();
-
-    // Erosion
-    return get_morpho(color_buffer, gray_buffer, img.width, img.height, morpho_shape, erosion_);
-}
-
-uint8_t* dilation_col1(const Image& img, bool morpho_shape[MORPHO_SIZE][MORPHO_SIZE])
-{
-    uint8_t* gray_buffer = img.get_gray(); // TODO free
-    uint8_t* color_buffer = img.get_char_data_copy();
-
-    // Dilation
-    return get_morpho(color_buffer, gray_buffer, img.width, img.height, morpho_shape, dilation_);
-}
-
-uint8_t* open_morpho_col1(const Image& img, bool morpho_shape[MORPHO_SIZE][MORPHO_SIZE])
-{
-    uint8_t* gray_buffer = img.get_gray(); // TODO free
-    uint8_t* color_buffer = img.get_char_data_copy();
-
-    // Erosion
-    color_buffer = get_morpho(color_buffer, gray_buffer, img.width, img.height, morpho_shape, erosion_);
-
-    // Dilation
-    color_buffer = get_morpho(color_buffer, gray_buffer, img.width, img.height, morpho_shape, dilation_);
-
-    return color_buffer;
-}
-
-uint8_t* close_morpho_col1(const Image& img, bool morpho_shape[MORPHO_SIZE][MORPHO_SIZE])
-{
-    uint8_t* gray_buffer = img.get_gray(); // TODO free
-    uint8_t* color_buffer = img.get_char_data_copy();
-
-    // Dilation
-    color_buffer = get_morpho(color_buffer, gray_buffer, img.width, img.height, morpho_shape, dilation_);
-
-    // Erosion
-    color_buffer = get_morpho(color_buffer, gray_buffer, img.width, img.height, morpho_shape, erosion_);
-
-    return color_buffer;
 }

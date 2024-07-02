@@ -33,6 +33,8 @@ add_executable(morpho_couleur main.cpp
         src/backend/utils/color.hh
         src/backend/utils/color.cpp
         src/backend/utils/color_hsv.hh
+        src/backend/utils/color_lab.hh
+        src/backend/utils/color_lab.cpp
         src/backend/utils/utils.hh
 
         ## image
@@ -51,10 +53,16 @@ add_executable(morpho_couleur main.cpp
         src/backend/shapes/diamond.hh
 
         ## morpho
+        src/backend/morpho/method.hh
+        src/backend/morpho/method.cpp
         src/backend/morpho/morpho_bw.hh
         src/backend/morpho/morpho_bw.cpp
-        src/backend/morpho/morpho_col1.hh
-        src/backend/morpho/morpho_col1.cpp
+        src/backend/morpho/morpho_rgb.hh
+        src/backend/morpho/morpho_rgb.cpp
+        src/backend/morpho/morpho_hsv.hh
+        src/backend/morpho/morpho_hsv.cpp
+        src/backend/morpho/morpho_lab.hh
+        src/backend/morpho/morpho_lab.cpp
 )
 
 find_package(OpenGL REQUIRED)

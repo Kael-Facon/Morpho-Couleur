@@ -60,9 +60,9 @@ public:
 
 struct rgb24
 {
-    uint8_t* r;
-    uint8_t* g;
-    uint8_t* b;
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
 };
 
 Image *load_image(const std::string& path_name);

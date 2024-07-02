@@ -19,7 +19,8 @@
 
 //MY INCLUDES
 #include "src/frontend/app.hh"
-#include "src/backend/morpho/morpho_col1.hh"
+#include "src/backend/morpho/morpho_rgb.hh"
+#include "src/backend/morpho/morpho_lab.hh"
 #include "src/backend/shapes/disk.hh"
 #include "src/backend/shapes/diamond.hh"
 #include "src/backend/shapes/square.hh"
@@ -136,7 +137,8 @@ int main(int, char**)
     IM_ASSERT(app.env.image->width != 0);
 
     create_disk(); create_square(); create_diamond();
-    uint8_t* res = close_morpho_col1(*app.env.image, morpho_square);
+    //Lab test_col = rbg_to_lab(0, 255, 0);
+    uint8_t* res = close_morpho_lab(*app.env.image, {20, 110, 255}, morpho_disk);
     // uint8_t* test_gray = app.env.image->get_gray();
     // uint8_t* res = erosion_col1(app.env.image->get_char_data_copy(), test_gray, app.env.image->width, app.env.image->height, morpho_disk);
     app.env.image->update_char_data(res);
@@ -145,7 +147,7 @@ int main(int, char**)
     // app.env.image->update_char_data(res);
 
     app.env.image->update_color_data();
-    app.env.image->save_as_ppm("ero_dil.ppm");
+    app.env.image->save_as_ppm("lab_morpho.ppm");
 
     //TODO CODE HERE
 
