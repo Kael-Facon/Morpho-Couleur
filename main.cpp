@@ -136,7 +136,7 @@ int main(int, char**)
     IM_ASSERT(app.env.image->width != 0);
 
     create_disk(); create_square(); create_diamond();
-    uint8_t* res = close_morpho_col1(*app.env.image, morpho_disk);
+    uint8_t* res = close_morpho_col1(*app.env.image, morpho_square);
     // uint8_t* test_gray = app.env.image->get_gray();
     // uint8_t* res = erosion_col1(app.env.image->get_char_data_copy(), test_gray, app.env.image->width, app.env.image->height, morpho_disk);
     app.env.image->update_char_data(res);

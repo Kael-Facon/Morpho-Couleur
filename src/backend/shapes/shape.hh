@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#define MORPHO_RADIUS 8
+#define MORPHO_RADIUS 5
 #define MORPHO_SIZE MORPHO_RADIUS + MORPHO_RADIUS - 1
 
 inline std::ostream& operator<<(std::ostream& os, bool shape[MORPHO_SIZE][MORPHO_SIZE])

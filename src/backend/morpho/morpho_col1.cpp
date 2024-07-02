@@ -3,10 +3,16 @@
 #include "morpho_bw.hh"
 #include "../shapes/shape.hh"
 
-uint64_t dilation_col1_(uint8_t* gray_buffer, int x, int y, int width, int height, bool morpho_shape[MORPHO_SIZE][MORPHO_SIZE])
+// Generic method for erosion and dilation
+////////////////////////////////////////////////////////////////
+
+bool erosion_(uint8_t buffer_val, uint8_t value) { return buffer_val < value; }
+bool dilation_(uint8_t buffer_val, uint8_t value) { return buffer_val > value; }
+
+uint64_t get_morpho_pos(uint8_t* gray_buffer, int x, int y, int width, int height, bool morpho_shape[MORPHO_SIZE][MORPHO_SIZE], bool (*method)(uint8_t buffer_val, uint8_t value))
 {
-    uint8_t max_value = gray_buffer[x + width * y];
-    uint64_t max_pos = x + width * y;
+    uint8_t value = gray_buffer[x + width * y];
+    uint64_t pos = x + width * y;
     for (int i = 0; i < MORPHO_SIZE; i++)
     {
         for (int j = 0; j < MORPHO_SIZE; j++)
@@ -16,125 +22,91 @@ uint64_t dilation_col1_(uint8_t* gray_buffer, int x, int y, int width, int heigh
                 (j + y - MORPHO_RADIUS) >= 0 && 
                 (j + y - MORPHO_RADIUS) < height &&
                 morpho_shape[i][j])
-                if (gray_buffer[(i + x - MORPHO_RADIUS) + width * (j + y - MORPHO_RADIUS)] > max_value)
+                if (method(gray_buffer[(i + x - MORPHO_RADIUS) + width * (j + y - MORPHO_RADIUS)], value))
                 {
-                    max_value = gray_buffer[(i + x - MORPHO_RADIUS) + width *(j + y - MORPHO_RADIUS)];
-                    max_pos = (i + x - MORPHO_RADIUS) + width *(j + y - MORPHO_RADIUS);
+                    value = gray_buffer[(i + x - MORPHO_RADIUS) + width *(j + y - MORPHO_RADIUS)];
+                    pos = (i + x - MORPHO_RADIUS) + width *(j + y - MORPHO_RADIUS);
                 }
         }
     }
 
-    return max_pos;
+    return pos;
 }
 
-uint8_t* dilation_col1(uint8_t* color_buffer, uint8_t* gray_buffer, int width, int height, bool morpho_shape[MORPHO_SIZE][MORPHO_SIZE])
+uint8_t* get_morpho(uint8_t* src_buffer, uint8_t* gray_buffer, int width, int height, bool morpho_shape[MORPHO_SIZE][MORPHO_SIZE], bool (*method)(uint8_t buffer_val, uint8_t value))
 {
-    uint8_t* dilate_color_buffer = (uint8_t*) malloc(height * width * sizeof(uint8_t) * 3);
-    uint8_t* dilate_gray_buffer = (uint8_t*) malloc(height * width * sizeof(uint8_t));
+    uint8_t* res_buffer = (uint8_t*) malloc(height * width * sizeof(uint8_t) * 3);
+    uint8_t* tmp_gray_buffer = (uint8_t*) malloc(height * width * sizeof(uint8_t));
 
-    // Dilation
+    // Morpho
     for (int y = 0; y < height; y++)
     {
-        uint8_t* tmp_color_lineptr = (dilate_color_buffer + y * width * 3);
-        uint8_t* tmp_gray_lineptr = (dilate_gray_buffer + y * width);
+        uint8_t* res_lineptr = (res_buffer + y * width * 3);
+        uint8_t* tmp_gray_lineptr = (tmp_gray_buffer + y * width);
         for (int x = 0; x < width; x++)
         {
-            uint64_t max_pos = dilation_col1_(gray_buffer, x, y, width, height, morpho_shape);
-            tmp_color_lineptr[x * 3 + 0] = color_buffer[max_pos * 3 + 0];
-            tmp_color_lineptr[x * 3 + 1] = color_buffer[max_pos * 3 + 1];
-            tmp_color_lineptr[x * 3 + 2] = color_buffer[max_pos * 3 + 2];
-            tmp_gray_lineptr[x] = gray_buffer[max_pos];
+            uint64_t morpho_pos = get_morpho_pos(gray_buffer, x, y, width, height, morpho_shape, method);
+            res_lineptr[x * 3 + 0] = src_buffer[morpho_pos * 3 + 0];
+            res_lineptr[x * 3 + 1] = src_buffer[morpho_pos * 3 + 1];
+            res_lineptr[x * 3 + 2] = src_buffer[morpho_pos * 3 + 2];
+            tmp_gray_lineptr[x] = gray_buffer[morpho_pos];
         }
     }
 
     // Deep copy of black and white dilation
     for (int i = 0; i < height * width * sizeof(uint8_t); i++)
-        gray_buffer[i] = dilate_gray_buffer[i];
+        gray_buffer[i] = tmp_gray_buffer[i];
 
-    free(dilate_gray_buffer);
-    free(color_buffer);
+    free(tmp_gray_buffer);
+    free(src_buffer);
 
-    return dilate_color_buffer;
+    return res_buffer;
 }
 
-uint64_t erosion_col1_(uint8_t* gray_buffer, int x, int y, int width, int height, bool morpho_shape[MORPHO_SIZE][MORPHO_SIZE])
-{
-    uint8_t min_value = gray_buffer[x + width * y];
-    uint64_t min_pos = x + width * y;
-    for (int i = 0; i < MORPHO_SIZE; i++)
-    {
-        for (int j = 0; j < MORPHO_SIZE; j++)
-        {
-            if ((i + x - MORPHO_RADIUS) >= 0 && 
-                (i + x - MORPHO_RADIUS) < width && 
-                (j + y - MORPHO_RADIUS) >= 0 && 
-                (j + y - MORPHO_RADIUS) < height &&
-                morpho_shape[i][j])
-                if (gray_buffer[(i + x - MORPHO_RADIUS) + width * (j + y - MORPHO_RADIUS)] < min_value)
-                {
-                    min_value = gray_buffer[(i + x - MORPHO_RADIUS) + width *(j + y - MORPHO_RADIUS)];
-                    min_pos = (i + x - MORPHO_RADIUS) + width *(j + y - MORPHO_RADIUS);
-                }
-        }
-    }
+/////////////////////////////////////////////////
 
-    return min_pos;
-}
-
-uint8_t* erosion_col1(uint8_t* color_buffer, uint8_t* gray_buffer, int width, int height, bool morpho_shape[MORPHO_SIZE][MORPHO_SIZE])
+uint8_t* erosion_col1(const Image& img, bool morpho_shape[MORPHO_SIZE][MORPHO_SIZE])
 {
-    uint8_t* erode_color_buffer = (uint8_t*) malloc(height * width * sizeof(uint8_t) * 3);
-    uint8_t* erode_gray_buffer = (uint8_t*) malloc(height * width * sizeof(uint8_t));
+    uint8_t* gray_buffer = img.get_gray(); // TODO free
+    uint8_t* color_buffer = img.get_char_data_copy();
 
     // Erosion
-    for (int y = 0; y < height; y++)
-    {
-        uint8_t* tmp_color_lineptr = (erode_color_buffer + y * width * 3);
-        uint8_t* tmp_gray_lineptr = (erode_gray_buffer + y * width);
-        for (int x = 0; x < width; x++)
-        {
-            uint64_t min_pos = erosion_col1_(gray_buffer, x, y, width, height, morpho_shape);
-            tmp_color_lineptr[x * 3 + 0] = color_buffer[min_pos * 3 + 0];
-            tmp_color_lineptr[x * 3 + 1] = color_buffer[min_pos * 3 + 1];
-            tmp_color_lineptr[x * 3 + 2] = color_buffer[min_pos * 3 + 2];
-            tmp_gray_lineptr[x] = gray_buffer[min_pos]; 
-        }
-    }
-    
-    // Deep copy of black and white erosion
-    for (int i = 0; i < height * width * sizeof(uint8_t); i++)
-        gray_buffer[i] = erode_gray_buffer[i];
+    return get_morpho(color_buffer, gray_buffer, img.width, img.height, morpho_shape, erosion_);
+}
 
-    free(erode_gray_buffer);
-    free(color_buffer);
+uint8_t* dilation_col1(const Image& img, bool morpho_shape[MORPHO_SIZE][MORPHO_SIZE])
+{
+    uint8_t* gray_buffer = img.get_gray(); // TODO free
+    uint8_t* color_buffer = img.get_char_data_copy();
 
-    return erode_color_buffer;
+    // Dilation
+    return get_morpho(color_buffer, gray_buffer, img.width, img.height, morpho_shape, dilation_);
 }
 
 uint8_t* open_morpho_col1(const Image& img, bool morpho_shape[MORPHO_SIZE][MORPHO_SIZE])
 {
-    uint8_t* gray_buffer = img.get_gray();
+    uint8_t* gray_buffer = img.get_gray(); // TODO free
     uint8_t* color_buffer = img.get_char_data_copy();
 
     // Erosion
-    color_buffer = erosion_col1(color_buffer, gray_buffer, img.width, img.height, morpho_shape);
+    color_buffer = get_morpho(color_buffer, gray_buffer, img.width, img.height, morpho_shape, erosion_);
 
     // Dilation
-    color_buffer = dilation_col1(color_buffer, gray_buffer, img.width, img.height, morpho_shape);
+    color_buffer = get_morpho(color_buffer, gray_buffer, img.width, img.height, morpho_shape, dilation_);
 
     return color_buffer;
 }
 
 uint8_t* close_morpho_col1(const Image& img, bool morpho_shape[MORPHO_SIZE][MORPHO_SIZE])
 {
-    uint8_t* gray_buffer = img.get_gray();
+    uint8_t* gray_buffer = img.get_gray(); // TODO free
     uint8_t* color_buffer = img.get_char_data_copy();
 
     // Dilation
-    color_buffer = dilation_col1(color_buffer, gray_buffer, img.width, img.height, morpho_shape);
+    color_buffer = get_morpho(color_buffer, gray_buffer, img.width, img.height, morpho_shape, dilation_);
 
     // Erosion
-    color_buffer = erosion_col1(color_buffer, gray_buffer, img.width, img.height, morpho_shape);
+    color_buffer = get_morpho(color_buffer, gray_buffer, img.width, img.height, morpho_shape, erosion_);
 
     return color_buffer;
 }
