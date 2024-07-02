@@ -33,6 +33,7 @@ add_executable(morpho_couleur main.cpp
         src/backend/utils/color.hh
         src/backend/utils/color.cpp
         src/backend/utils/color_hsv.hh
+        src/backend/utils/color_hsv.cpp
         src/backend/utils/color_lab.hh
         src/backend/utils/color_lab.cpp
         src/backend/utils/utils.hh

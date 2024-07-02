@@ -21,6 +21,7 @@
 #include "src/frontend/app.hh"
 #include "src/backend/morpho/morpho_rgb.hh"
 #include "src/backend/morpho/morpho_lab.hh"
+#include "src/backend/morpho/morpho_hsv.hh"
 #include "src/backend/shapes/disk.hh"
 #include "src/backend/shapes/diamond.hh"
 #include "src/backend/shapes/square.hh"
@@ -138,7 +139,7 @@ int main(int, char**)
 
     create_disk(); create_square(); create_diamond();
     //Lab test_col = rbg_to_lab(0, 255, 0);
-    uint8_t* res = close_morpho_lab(*app.env.image, {20, 110, 255}, morpho_disk);
+    uint8_t* res = dilation_hsv_v(*app.env.image, morpho_disk);
     // uint8_t* test_gray = app.env.image->get_gray();
     // uint8_t* res = erosion_col1(app.env.image->get_char_data_copy(), test_gray, app.env.image->width, app.env.image->height, morpho_disk);
     app.env.image->update_char_data(res);

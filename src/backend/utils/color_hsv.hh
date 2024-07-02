@@ -1,5 +1,22 @@
 #pragma once
 
+#include <stdint.h>
+
+#include "../image/image.hh"
+
+struct hsv
+{
+    uint8_t h; // 0 - 180
+    uint8_t s; // 0 - 255
+    uint8_t v; // 0 - 255
+};
+
+hsv rbg_to_hsv(uint8_t r, uint8_t g, uint8_t b);
+hsv rbg_to_hsv(rgb24 rgb);
+hsv* get_hsv_buffer(rgb24* rgb_buffer, int width, int height);
+uint8_t* get_hsv_saturation_map(const Image& img);
+uint8_t* get_hsv_value_map(const Image& img);
+
 class ColorHSV {
 public :
     ColorHSV()= default;
