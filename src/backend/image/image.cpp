@@ -287,6 +287,7 @@ uint8_t* Image::get_channel(IMAGE_CHANNEL chan)
 
 void Image::save_as_ppm(const std::string& pathname)
 {
+    update_color_data();
     std::ofstream ofs;
     ofs.open(pathname, std::ifstream::binary);
     ofs << "P6\n" << width << " " << height << "\n255\n";

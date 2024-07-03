@@ -6,7 +6,7 @@
 
 static bool morpho_disk[MORPHO_SIZE][MORPHO_SIZE] = {false};
 
-void create_disk()
+inline void create_disk()
 {
     for (int i = 0; i < MORPHO_SIZE; i++)
         for (int j = 0; j < MORPHO_SIZE; j++)

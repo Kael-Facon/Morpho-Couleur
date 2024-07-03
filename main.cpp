@@ -19,12 +19,6 @@
 
 //MY INCLUDES
 #include "src/frontend/app.hh"
-#include "src/backend/morpho/morpho_rgb.hh"
-#include "src/backend/morpho/morpho_lab.hh"
-#include "src/backend/morpho/morpho_hsv.hh"
-#include "src/backend/shapes/disk.hh"
-#include "src/backend/shapes/diamond.hh"
-#include "src/backend/shapes/square.hh"
 
 // [Win32] Our example includes a copy of glfw3.lib pre-compiled with VS2010 to maximize ease of testing and compatibility with old VS compilers.
 // To link with VS2010-era libraries, VS2015+ requires linking with legacy_stdio_definitions.lib, which we do using this pragma.
@@ -136,20 +130,6 @@ int main(int, char**)
     auto app = App("../data/morpho_couleur.ppm");
     //auto app = App("../data/sunset.ppm");
     IM_ASSERT(app.env.image->width != 0);
-
-    create_disk(); create_square(); create_diamond();
-    //Lab test_col = rbg_to_lab(0, 255, 0);
-    uint8_t* res = dilation_hsv_v(*app.env.image, morpho_disk);
-    // uint8_t* test_gray = app.env.image->get_gray();
-    // uint8_t* res = erosion_col1(app.env.image->get_char_data_copy(), test_gray, app.env.image->width, app.env.image->height, morpho_disk);
-    app.env.image->update_char_data(res);
-
-    // res = dilation_col1(app.env.image->get_char_data_copy(), app.env.image->get_gray(), app.env.image->width, app.env.image->height, morpho_disk);
-    // app.env.image->update_char_data(res);
-
-    app.env.image->update_color_data();
-    app.env.image->save_as_ppm("lab_morpho.ppm");
-
     //TODO CODE HERE
 
     // Main loop

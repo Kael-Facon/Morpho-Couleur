@@ -4,15 +4,18 @@ using namespace std;
 
 App::App(){
     env = Env();
+    create_disk(); create_square(); create_diamond();
 }
 
 App::App(const char* filename) {
     env = Env(filename);
+    create_disk(); create_square(); create_diamond();
 }
 
 void App::Windows()
 {
     ImGui::Begin("Actions");
+    Actions();
     ImGui::End();
 
     ImGui::Begin("Color Options");
@@ -46,6 +49,53 @@ void App::Windows()
 //    ImGui::ShowDemoWindow();
 }
 
+void App::Actions() {
+    if (ImGui::RadioButton("Disk", &env.form, 0)) { env.render(); }
+    ImGui::SameLine();
+    if (ImGui::RadioButton("Square", &env.form, 1)) { env.render(); }
+    ImGui::SameLine();
+    if (ImGui::RadioButton("Diamond", &env.form, 2)) { env.render(); }
+//    ImGui::SameLine();
+//    if (ImGui::RadioButton("No Grid", &env.form, 1)) { env.render(); }
+    if (ImGui::Button("B&W Morph")) {
+
+    }
+    if (ImGui::Button("Morph RGB")) {
+        //Lab test_col = rbg_to_lab(0, 255, 0);
+        uint8_t* res = dilation_hsv_v(*env.image, morpho_disk);
+        // uint8_t* test_gray = app.env.image->get_gray();
+        // uint8_t* res = erosion_col1(app.env.image->get_char_data_copy(), test_gray, app.env.image->width, app.env.image->height, morpho_disk);
+        env.image->update_char_data(res);
+
+        // res = dilation_col1(app.env.image->get_char_data_copy(), app.env.image->get_gray(), app.env.image->width, app.env.image->height, morpho_disk);
+        // app.env.image->update_char_data(res);
+    }
+    if (ImGui::Button("Morph HSV Value")) {
+        uint8_t* res;
+        if (env.form == 0)
+            res = dilation_hsv_v(*env.image, morpho_disk);
+        if (env.form == 0)
+            res = dilation_hsv_v(*env.image, morpho_square);
+        if (env.form == 0)
+            res = dilation_hsv_v(*env.image, morpho_diamond);
+
+        env.image->update_char_data(res);
+        env.render();
+    }
+    if (ImGui::Button("Morph HSV Saturation")) {
+//        env.image->update_char_data(res);
+    }
+    if (ImGui::Button("Morph HSV Mix")) {
+//        env.image->update_char_data(res);
+    }
+    if (ImGui::Button("Morph LAB")) {
+//        env.image->update_char_data(res);
+    }
+    if (ImGui::Button("Morph HSV Mix")) {
+//        env.image->update_char_data(res);
+    }
+}
+
 void App::ColorOptions() {
     static bool alpha_preview = true;
     static bool alpha_half_preview = false;
@@ -71,7 +121,6 @@ void App::ColorOptions() {
     if (display_mode == 3) flags |= ImGuiColorEditFlags_DisplayHSV;
     if (display_mode == 4) flags |= ImGuiColorEditFlags_DisplayHex;
     ImGui::ColorPicker4("MyColor##4", (float*)&color, flags);
-
 
     if (ImGui::Button("Update Color")) {
         // Update Color

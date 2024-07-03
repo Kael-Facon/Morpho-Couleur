@@ -11,6 +11,7 @@ public:
 
     void Windows();
     void ColorOptions();
+    void Actions();
     void PrintObjInfo() const;
     void Inputs(const ImGuiIO& io, ImVec2 pos);
 };
