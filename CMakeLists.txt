@@ -49,9 +49,11 @@ add_executable(morpho_couleur main.cpp
 
         ## shapes
         src/backend/shapes/shape.hh
-        src/backend/shapes/disk.hh
-        src/backend/shapes/square.hh
-        src/backend/shapes/diamond.hh
+        src/backend/shapes/shape.cpp
+        src/backend/shapes/disk.cpp
+        src/backend/shapes/square.cpp
+        src/backend/shapes/diamond.cpp
+        src/backend/shapes/morpho.cpp
 
         ## morpho
         src/backend/morpho/method.hh

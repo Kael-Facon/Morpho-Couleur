@@ -16,6 +16,8 @@ hsv rbg_to_hsv(rgb24 rgb);
 hsv* get_hsv_buffer(rgb24* rgb_buffer, int width, int height);
 uint8_t* get_hsv_saturation_map(const Image& img);
 uint8_t* get_hsv_value_map(const Image& img);
+uint8_t* get_hsv_saturation_value_map(const Image& img);
+uint8_t* get_hsv_saturation_value_map_coef(const Image& img, float coef_sat);
 
 class ColorHSV {
 public :

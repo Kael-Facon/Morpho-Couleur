@@ -2,23 +2,45 @@
 
 #include <iostream>
 
-#define MORPHO_RADIUS 8
-#define MORPHO_SIZE MORPHO_RADIUS + MORPHO_RADIUS - 1
-
-inline std::ostream& operator<<(std::ostream& os, bool shape[MORPHO_SIZE][MORPHO_SIZE])
+class morpho_shape
 {
-    for (int i = 0; i < MORPHO_SIZE; i++)
+public:
+    enum type
     {
-        os << shape[i][0];
-        for (int j = 1; j < MORPHO_SIZE; j++)
-            os << ' ' << shape[i][j];
+        DISK,
+        SQUARE,
+        DIAMOND,
+        MORPHO,
+    };
+
+    int radius = 5;
+    int  size = 2 * radius - 1;
+    type t = type::DISK;
+    bool* mask = nullptr; 
+
+    morpho_shape();
+    morpho_shape(int radius, type t_);
+    ~morpho_shape() = default;
+
+    // Generic
+    void compute_shape();
+
+    // Specific
+    void compute_disk();
+    void compute_diamond();
+    void compute_square();
+    void compute_morpho();
+};
+
+inline std::ostream& operator<<(std::ostream& os, morpho_shape ms)
+{
+    for (int i = 0; i < ms.size; i++)
+    {
+        os << ms.mask[i];
+        for (int j = 1; j < ms.size; j++)
+            os << ' ' << ms.mask[i + ms.size * j];
         os << '\n';
     }
 
     return os;
-}
-
-inline void print_shape(bool shape[MORPHO_SIZE][MORPHO_SIZE])
-{
-    std::cout << shape;
 }
