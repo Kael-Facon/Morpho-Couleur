@@ -13,6 +13,7 @@
 #include "../backend/morpho/morpho_rgb.hh"
 #include "../backend/morpho/morpho_lab.hh"
 #include "../backend/morpho/morpho_hsv.hh"
+#include "../backend/morpho/morpho_bw.hh"
 #include "../backend/shapes/disk.hh"
 #include "../backend/shapes/diamond.hh"
 #include "../backend/shapes/square.hh"
@@ -21,7 +22,8 @@ class Env {
 public:
     GLuint render_image{};
     Image *image;
-    int form;
+    int form = 0;
+    int size = 1;
 
     Env();
     explicit Env(const char* filename);
