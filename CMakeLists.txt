@@ -54,6 +54,8 @@ add_executable(morpho_couleur main.cpp
         src/backend/shapes/square.cpp
         src/backend/shapes/diamond.cpp
         src/backend/shapes/morpho.cpp
+        src/backend/shapes/bow_tie.cpp
+        src/backend/shapes/rabbit.cpp
 
         ## morpho
         src/backend/morpho/method.hh

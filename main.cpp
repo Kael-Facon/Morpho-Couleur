@@ -135,12 +135,10 @@ int main(int, char**)
     //auto app = App("../data/sunset.ppm");
     IM_ASSERT(app.env.image->width != 0);
 
-    morpho_shape shape = morpho_shape(14, morpho_shape::type::MORPHO);
+    morpho_shape shape = morpho_shape(8, morpho_shape::type::DISK);
     std::cout << shape;
-    //Lab test_col = rbg_to_lab(0, 255, 0);
+
     uint8_t* res = dilation_rgb(*app.env.image, shape);
-    // uint8_t* test_gray = app.env.image->get_gray();
-    // uint8_t* res = erosion_col1(app.env.image->get_char_data_copy(), test_gray, app.env.image->width, app.env.image->height, morpho_disk);
     app.env.image->update_char_data(res);
 
     // res = dilation_col1(app.env.image->get_char_data_copy(), app.env.image->get_gray(), app.env.image->width, app.env.image->height, morpho_disk);
