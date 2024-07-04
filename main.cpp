@@ -135,17 +135,36 @@ int main(int, char**)
     //auto app = App("../data/sunset.ppm");
     IM_ASSERT(app.env.image->width != 0);
 
-    morpho_shape shape = morpho_shape(8, morpho_shape::type::DISK);
-    std::cout << shape;
+    morpho_shape shape = morpho_shape(5, morpho_shape::type::DIAMOND);
 
-    uint8_t* res = dilation_rgb(*app.env.image, shape);
-    app.env.image->update_char_data(res);
+    // SV
+    uint8_t* res = dilation_lab(*app.env.image, {255, 0, 0}, shape);
+    Image d_sv = Image(app.env.image->width, app.env.image->height);
+    d_sv.update_char_data(res);
+    d_sv.update_color_data();
+    d_sv.save_as_ppm("d_1r.ppm");
+    free(res);
 
-    // res = dilation_col1(app.env.image->get_char_data_copy(), app.env.image->get_gray(), app.env.image->width, app.env.image->height, morpho_disk);
-    // app.env.image->update_char_data(res);
+    // S
+    res = dilation_lab(*app.env.image, {0, 255, 0}, shape);
+    Image d_s = Image(app.env.image->width, app.env.image->height);
+    d_s.update_char_data(res);
+    d_s.update_color_data();
+    d_s.save_as_ppm("d_2g.ppm");
+    free(res);
 
-    app.env.image->update_color_data();
-    app.env.image->save_as_ppm("erov.ppm");
+
+    // V
+    res = dilation_lab(*app.env.image, {0, 0, 255}, shape);
+    Image d_v = Image(app.env.image->width, app.env.image->height);
+    d_v.update_char_data(res);
+    d_v.update_color_data();
+    d_v.save_as_ppm("d_3b.ppm");
+    free(res);
+
+    // res = dilation_rgb(*app.env.image, shape);
+    // Image base = Image(app.env.image->width, app.env.image->height);
+    app.env.image->save_as_ppm("base.ppm");
 
     //TODO CODE HERE
 

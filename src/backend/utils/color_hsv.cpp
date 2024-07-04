@@ -27,7 +27,7 @@ hsv rbg_to_hsv(uint8_t r_, uint8_t g_, uint8_t b_)
 
     new_hsv.s = 0; // s
     if (max_color != 0)
-        new_hsv.s = static_cast<uint8_t>((1 - min_color / max_color) * 255); // s
+        new_hsv.s = max_min; // s
     new_hsv.v = max_color; // v
 
     return new_hsv;
@@ -71,16 +71,16 @@ uint8_t* get_hsv_value_map(const Image& img)
     rgb24* rgb_buffer = (rgb24*) img.get_char_data_copy();
     hsv* hsv_buffer = get_hsv_buffer(rgb_buffer, img.width, img.height);
 
-    uint8_t* saturation_map = (uint8_t*) malloc(img.width * img.height * sizeof(uint8_t));
+    uint8_t* value_map = (uint8_t*) malloc(img.width * img.height * sizeof(uint8_t));
 
     for (int i = 0; i < img.width; i++) 
         for (int j = 0; j < img.height; j++)
-            saturation_map[i + j * img.width] = hsv_buffer[i + j * img.width].v;
+            value_map[i + j * img.width] = hsv_buffer[i + j * img.width].v;
     
     free(rgb_buffer);
     free(hsv_buffer);
 
-    return saturation_map;
+    return value_map;
 }
 
 uint8_t* get_hsv_saturation_value_map(const Image& img)
