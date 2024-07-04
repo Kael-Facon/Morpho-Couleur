@@ -5,6 +5,7 @@
 class App {
 public:
     Env env;
+    const char* filename;
 
     App();
     explicit App(const char* filename);

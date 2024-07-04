@@ -7,12 +7,12 @@ class morpho_shape
 public:
     enum type
     {
-        DISK,
-        SQUARE,
-        DIAMOND,
-        MORPHO,
-        BOW_TIE,
-        RABBIT,
+        DISK = 0,
+        SQUARE = 1,
+        DIAMOND = 2,
+        MORPHO = 3,
+        BOW_TIE = 4,
+        RABBIT = 5,
     };
 
     int radius = 5;

@@ -4,12 +4,12 @@ using namespace std;
 
 App::App(){
     env = Env();
-    create_disk(); create_square(); create_diamond();
+    filename = "../data/morpho_couleur.ppm";
 }
 
-App::App(const char* filename) {
+App::App(const char* filename_) {
+    filename = filename_;
     env = Env(filename);
-    create_disk(); create_square(); create_diamond();
 }
 
 void App::Windows()
@@ -42,6 +42,15 @@ void App::Windows()
     }
 
     ImGui::SameLine();
+    if (ImGui::Button("Reinnitialize"))
+    {
+        delete env.image;
+        env.image = load_image(filename);
+        env.render();
+    }
+
+
+    ImGui::SameLine();
     Inputs(io, pos);
 
     ImGui::End();
@@ -50,98 +59,66 @@ void App::Windows()
 }
 
 void App::Actions() {
-    if (ImGui::RadioButton("Disk", &env.form, 0)) { env.render(); }
+    if (ImGui::RadioButton("Disk", &env.form, 0)) {
+        env.shape = morpho_shape(env.size, static_cast<morpho_shape::type>(env.form));
+        env.render();
+    }
     ImGui::SameLine();
-    if (ImGui::RadioButton("Square", &env.form, 1)) { env.render(); }
+    if (ImGui::RadioButton("Square", &env.form, 1)) {
+        env.shape = morpho_shape(env.size, static_cast<morpho_shape::type>(env.form));
+        env.render();
+    }
     ImGui::SameLine();
-    if (ImGui::RadioButton("Diamond", &env.form, 2)) { env.render(); }
+    if (ImGui::RadioButton("Diamond", &env.form, 2)) {
+        env.shape = morpho_shape(env.size, static_cast<morpho_shape::type>(env.form));
+        env.render();
+    }
+    if (ImGui::RadioButton("Morpho", &env.form, 3)) {
+        env.shape = morpho_shape(env.size, static_cast<morpho_shape::type>(env.form));
+        env.render();
+    }
+    ImGui::SameLine();
+    if (ImGui::RadioButton("Bow Tie", &env.form, 4)) {
+        env.shape = morpho_shape(env.size, static_cast<morpho_shape::type>(env.form));
+        env.render();
+    }
+    ImGui::SameLine();
+    if (ImGui::RadioButton("Rabbit", &env.form, 5)) {
+        env.shape = morpho_shape(env.size, static_cast<morpho_shape::type>(env.form));
+        env.render();
+    }
 //    ImGui::SameLine();
 //    if (ImGui::RadioButton("No Grid", &env.form, 1)) { env.render(); }
 
-    ImGui::SliderInt("slider int", &env.size, 1, 15);
-    if (ImGui::Button("B&W Dilation")) {
-//        env.image->update_char_data(res);
-//        env.render();
-//        uint8_t* res = dilation_rgb(*env.image, morpho_disk);
-    }
-    ImGui::SameLine();
-    if (ImGui::Button("B&W Erosion")) {
-//        env.image->update_char_data(res);
-//        env.render();
-//        uint8_t* res = dilation_rgb(*env.image, morpho_disk);
-    }
-
-    if (ImGui::Button("RGB Dilation")) {
-        uint8_t* res = dilation_rgb(*env.image, morpho_disk);
-        env.image->update_char_data(res);
+    if (ImGui::Button("Update")) {
+        env.shape = morpho_shape(env.size, static_cast<morpho_shape::type>(env.form));
         env.render();
     }
     ImGui::SameLine();
-    if (ImGui::Button("RGB Erosion")) {
-        uint8_t* res = erosion_rgb(*env.image, morpho_disk);
-        env.image->update_char_data(res);
-        env.render();
-    }
-
-    if (ImGui::Button("HSV Dilation (V)")) {
-        uint8_t* res;
-        if (env.form == 0)
-            res = dilation_hsv_v(*env.image, morpho_disk);
-        else if (env.form == 1)
-            res = dilation_hsv_v(*env.image, morpho_square);
-        else
-            res = dilation_hsv_v(*env.image, morpho_diamond);
-
-        env.image->update_char_data(res);
-        env.render();
-    }
+    ImGui::SliderInt("Size", &env.size, 1, 15);
+    if (ImGui::Button("B&W Dilation")) { env.bw_dilation(); }
     ImGui::SameLine();
-    if (ImGui::Button("HSV Erosion (V)")) {
-        uint8_t* res;
-        if (env.form == 0)
-            res = erosion_hsv_v(*env.image, morpho_disk);
-        else if (env.form == 1)
-            res = erosion_hsv_v(*env.image, morpho_square);
-        else
-            res = erosion_hsv_v(*env.image, morpho_diamond);
+    if (ImGui::Button("B&W Erosion")) { env.bw_erosion(); }
 
-        env.image->update_char_data(res);
-        env.render();
-    }
-
-    if (ImGui::Button("HSV Dilation (S)")) {
-        uint8_t* res = dilation_hsv_s(*env.image, morpho_disk);
-        env.image->update_char_data(res);
-        env.render();
-    }
+    if (ImGui::Button("RGB Dilation")) { env.rgb_dilation(); }
     ImGui::SameLine();
-    if (ImGui::Button("HSV Erosion (S)")) {
-        uint8_t* res = erosion_hsv_s(*env.image, morpho_disk);
-        env.image->update_char_data(res);
-        env.render();
-    }
+    if (ImGui::Button("RGB Erosion")) { env.rgb_erosion(); }
 
-    if (ImGui::Button("HSV Dilation (SV)")) {
-//        env.image->update_char_data(res);
-//        env.render();
-    }
+    if (ImGui::Button("HSV Dilation (V)")) { env.hsv_dilation_v(); }
     ImGui::SameLine();
-    if (ImGui::Button("HSV Erosion (SV)")) {
-//        env.image->update_char_data(res);
-//        env.render();
-    }
+    if (ImGui::Button("HSV Erosion (V)")) { env.hsv_erosion_v(); }
 
-    if (ImGui::Button("LAB Dilation")) {
-        uint8_t* res = dilation_lab(*env.image, {255, 0, 0}, morpho_disk);
-        env.image->update_char_data(res);
-        env.render();
-    }
+    if (ImGui::Button("HSV Dilation (S)")) { env.hsv_dilation_s(); }
     ImGui::SameLine();
-    if (ImGui::Button("LAB Erosion")) {
-        uint8_t* res = erosion_lab(*env.image, {255, 0, 0}, morpho_disk);
-        env.image->update_char_data(res);
-        env.render();
-    }
+    if (ImGui::Button("HSV Erosion (S)")) { env.hsv_erosion_s(); }
+
+    if (ImGui::Button("HSV Dilation (SV)")) { env.hsv_dilation_sv(); }
+    ImGui::SameLine();
+    if (ImGui::Button("HSV Erosion (SV)")) { env.hsv_erosion_sv(); }
+
+    if (ImGui::Button("LAB Dilation")) { env.lab_dilation(); }
+    ImGui::SameLine();
+    if (ImGui::Button("LAB Erosion")) { env.lab_erosion(); }
 }
 
 void App::ColorOptions() {
@@ -184,9 +161,9 @@ void App::Inputs(const ImGuiIO& io, ImVec2 pos) {
     float region_x = io.MousePos.x - pos.x - region_sz * 0.5f;
     float region_y = io.MousePos.y - pos.y - region_sz * 0.5f;
     if (region_x < 0.0f) { return; }
-    else if (region_x > 1280 - region_sz) { return; }
+    else if (region_x > 1600 - region_sz) { return; }
     if (region_y < 0.0f) { return; }
-    else if (region_y > 720 - region_sz) { return; }
+    else if (region_y > 900 - region_sz) { return; }
     ImGui::Text("Min: (%.2f, %.2f)", region_x, region_y);
     ImGui::SameLine();
     ImGui::Text("Mouse down:");
