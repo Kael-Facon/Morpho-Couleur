@@ -4,15 +4,18 @@ using namespace std;
 
 App::App(){
     env = Env();
+    create_disk(); create_square(); create_diamond();
 }
 
 App::App(const char* filename) {
     env = Env(filename);
+    create_disk(); create_square(); create_diamond();
 }
 
 void App::Windows()
 {
     ImGui::Begin("Actions");
+    Actions();
     ImGui::End();
 
     ImGui::Begin("Color Options");
@@ -46,6 +49,101 @@ void App::Windows()
 //    ImGui::ShowDemoWindow();
 }
 
+void App::Actions() {
+    if (ImGui::RadioButton("Disk", &env.form, 0)) { env.render(); }
+    ImGui::SameLine();
+    if (ImGui::RadioButton("Square", &env.form, 1)) { env.render(); }
+    ImGui::SameLine();
+    if (ImGui::RadioButton("Diamond", &env.form, 2)) { env.render(); }
+//    ImGui::SameLine();
+//    if (ImGui::RadioButton("No Grid", &env.form, 1)) { env.render(); }
+
+    ImGui::SliderInt("slider int", &env.size, 1, 15);
+    if (ImGui::Button("B&W Dilation")) {
+//        env.image->update_char_data(res);
+//        env.render();
+//        uint8_t* res = dilation_rgb(*env.image, morpho_disk);
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("B&W Erosion")) {
+//        env.image->update_char_data(res);
+//        env.render();
+//        uint8_t* res = dilation_rgb(*env.image, morpho_disk);
+    }
+
+    if (ImGui::Button("RGB Dilation")) {
+        uint8_t* res = dilation_rgb(*env.image, morpho_disk);
+        env.image->update_char_data(res);
+        env.render();
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("RGB Erosion")) {
+        uint8_t* res = erosion_rgb(*env.image, morpho_disk);
+        env.image->update_char_data(res);
+        env.render();
+    }
+
+    if (ImGui::Button("HSV Dilation (V)")) {
+        uint8_t* res;
+        if (env.form == 0)
+            res = dilation_hsv_v(*env.image, morpho_disk);
+        else if (env.form == 1)
+            res = dilation_hsv_v(*env.image, morpho_square);
+        else
+            res = dilation_hsv_v(*env.image, morpho_diamond);
+
+        env.image->update_char_data(res);
+        env.render();
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("HSV Erosion (V)")) {
+        uint8_t* res;
+        if (env.form == 0)
+            res = erosion_hsv_v(*env.image, morpho_disk);
+        else if (env.form == 1)
+            res = erosion_hsv_v(*env.image, morpho_square);
+        else
+            res = erosion_hsv_v(*env.image, morpho_diamond);
+
+        env.image->update_char_data(res);
+        env.render();
+    }
+
+    if (ImGui::Button("HSV Dilation (S)")) {
+        uint8_t* res = dilation_hsv_s(*env.image, morpho_disk);
+        env.image->update_char_data(res);
+        env.render();
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("HSV Erosion (S)")) {
+        uint8_t* res = erosion_hsv_s(*env.image, morpho_disk);
+        env.image->update_char_data(res);
+        env.render();
+    }
+
+    if (ImGui::Button("HSV Dilation (SV)")) {
+//        env.image->update_char_data(res);
+//        env.render();
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("HSV Erosion (SV)")) {
+//        env.image->update_char_data(res);
+//        env.render();
+    }
+
+    if (ImGui::Button("LAB Dilation")) {
+        uint8_t* res = dilation_lab(*env.image, {255, 0, 0}, morpho_disk);
+        env.image->update_char_data(res);
+        env.render();
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("LAB Erosion")) {
+        uint8_t* res = erosion_lab(*env.image, {255, 0, 0}, morpho_disk);
+        env.image->update_char_data(res);
+        env.render();
+    }
+}
+
 void App::ColorOptions() {
     static bool alpha_preview = true;
     static bool alpha_half_preview = false;
@@ -71,7 +169,6 @@ void App::ColorOptions() {
     if (display_mode == 3) flags |= ImGuiColorEditFlags_DisplayHSV;
     if (display_mode == 4) flags |= ImGuiColorEditFlags_DisplayHex;
     ImGui::ColorPicker4("MyColor##4", (float*)&color, flags);
-
 
     if (ImGui::Button("Update Color")) {
         // Update Color

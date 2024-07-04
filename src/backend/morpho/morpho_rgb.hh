@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 #include "../shapes/shape.hh"
 #include "../image/image.hh"
 
