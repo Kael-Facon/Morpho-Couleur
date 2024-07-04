@@ -19,10 +19,6 @@
 
 //MY INCLUDES
 #include "src/frontend/app.hh"
-#include "src/backend/morpho/morpho_rgb.hh"
-#include "src/backend/morpho/morpho_lab.hh"
-#include "src/backend/morpho/morpho_hsv.hh"
-#include "src/backend/shapes/shape.hh"
 
 // [Win32] Our example includes a copy of glfw3.lib pre-compiled with VS2010 to maximize ease of testing and compatibility with old VS compilers.
 // To link with VS2010-era libraries, VS2015+ requires linking with legacy_stdio_definitions.lib, which we do using this pragma.
@@ -134,38 +130,6 @@ int main(int, char**)
     auto app = App("../data/morpho_couleur.ppm");
     //auto app = App("../data/sunset.ppm");
     IM_ASSERT(app.env.image->width != 0);
-
-    morpho_shape shape = morpho_shape(5, morpho_shape::type::DIAMOND);
-
-    // SV
-    uint8_t* res = dilation_lab(*app.env.image, {255, 0, 0}, shape);
-    Image d_sv = Image(app.env.image->width, app.env.image->height);
-    d_sv.update_char_data(res);
-    d_sv.update_color_data();
-    d_sv.save_as_ppm("d_1r.ppm");
-    free(res);
-
-    // S
-    res = dilation_lab(*app.env.image, {0, 255, 0}, shape);
-    Image d_s = Image(app.env.image->width, app.env.image->height);
-    d_s.update_char_data(res);
-    d_s.update_color_data();
-    d_s.save_as_ppm("d_2g.ppm");
-    free(res);
-
-
-    // V
-    res = dilation_lab(*app.env.image, {0, 0, 255}, shape);
-    Image d_v = Image(app.env.image->width, app.env.image->height);
-    d_v.update_char_data(res);
-    d_v.update_color_data();
-    d_v.save_as_ppm("d_3b.ppm");
-    free(res);
-
-    // res = dilation_rgb(*app.env.image, shape);
-    // Image base = Image(app.env.image->width, app.env.image->height);
-    app.env.image->save_as_ppm("base.ppm");
-
     //TODO CODE HERE
 
     // Main loop
@@ -206,6 +170,7 @@ int main(int, char**)
             ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
             window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
             window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+            window_flags |= ImGuiWindowFlags_MenuBar;
         }
         else
         {
@@ -229,27 +194,6 @@ int main(int, char**)
         {
             ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
             ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
-        }
-
-        if (ImGui::BeginMenuBar())
-        {
-            if (ImGui::BeginMenu("Options"))
-            {
-                ImGui::MenuItem("Fullscreen", nullptr, &opt_fullscreen);
-                ImGui::MenuItem("Padding", nullptr, &opt_padding);
-                ImGui::Separator();
-
-                if (ImGui::MenuItem("Flag: NoDockingOverCentralNode", "", (dockspace_flags & ImGuiDockNodeFlags_NoDockingOverCentralNode) != 0)) { dockspace_flags ^= ImGuiDockNodeFlags_NoDockingOverCentralNode; }
-                if (ImGui::MenuItem("Flag: NoDockingSplit",         "", (dockspace_flags & ImGuiDockNodeFlags_NoDockingSplit) != 0))             { dockspace_flags ^= ImGuiDockNodeFlags_NoDockingSplit; }
-                if (ImGui::MenuItem("Flag: NoUndocking",            "", (dockspace_flags & ImGuiDockNodeFlags_NoUndocking) != 0))                { dockspace_flags ^= ImGuiDockNodeFlags_NoUndocking; }
-                if (ImGui::MenuItem("Flag: NoResize",               "", (dockspace_flags & ImGuiDockNodeFlags_NoResize) != 0))                   { dockspace_flags ^= ImGuiDockNodeFlags_NoResize; }
-                if (ImGui::MenuItem("Flag: AutoHideTabBar",         "", (dockspace_flags & ImGuiDockNodeFlags_AutoHideTabBar) != 0))             { dockspace_flags ^= ImGuiDockNodeFlags_AutoHideTabBar; }
-                if (ImGui::MenuItem("Flag: PassthruCentralNode",    "", (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode) != 0, opt_fullscreen)) { dockspace_flags ^= ImGuiDockNodeFlags_PassthruCentralNode; }
-                ImGui::Separator();
-                ImGui::EndMenu();
-            }
-
-            ImGui::EndMenuBar();
         }
 
         //TODO MAIN CODE START
