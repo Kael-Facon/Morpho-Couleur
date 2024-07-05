@@ -37,83 +37,88 @@ void Env::render() {
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, image->width, image->height, GL_RGB, GL_UNSIGNED_BYTE, image->char_data);
 }
 
-void Env::bw_dilation() {
-//        image->update_char_data(res);
-//        render();
-//        uint8_t* res = dilation_rgb(*image, morpho_disk);
-}
-
-void Env::bw_erosion() {
-//        image->update_char_data(res);
-//        render();
-//        uint8_t* res = dilation_rgb(*image, morpho_disk);
-}
-
 void Env::rgb_dilation() {
     uint8_t* res = dilation_rgb(*image, shape);
     image->update_char_data(res);
+    free(res);
     render();
 }
 
 void Env::rgb_erosion() {
     uint8_t* res = erosion_rgb(*image, shape);
     image->update_char_data(res);
+    free(res);
     render();
 }
 
 void Env::hsv_dilation_s() {
     uint8_t* res = dilation_hsv_s(*image, shape);
     image->update_char_data(res);
+    free(res);
     render();
 }
 
 void Env::hsv_erosion_s() {
     uint8_t *res = erosion_hsv_s(*image, shape);
     image->update_char_data(res);
+    free(res);
     render();
 }
 
 void Env::hsv_dilation_v() {
     uint8_t* res;
-    if (form == 0)
-        res = dilation_hsv_v(*image, shape);
-
+    res = dilation_hsv_v(*image, shape);
     image->update_char_data(res);
+    free(res);
     render();
 }
 
 void Env::hsv_erosion_v() {
     uint8_t* res;
-    if (form == 0)
-        res = erosion_hsv_v(*image, shape);
-    else if (form == 1)
-        res = erosion_hsv_v(*image, shape);
-    else
-        res = erosion_hsv_v(*image, shape);
-
+    res = erosion_hsv_v(*image, shape);
     image->update_char_data(res);
+    free(res);
     render();
 }
 
 void Env::hsv_dilation_sv() {
-//        image->update_char_data(res);
-//        render();
+    uint8_t* res = dilation_hsv_sv(*image, shape);
+    image->update_char_data(res);
+    free(res);
+    render();
 }
 
 void Env::hsv_erosion_sv() {
-//        image->update_char_data(res);
-//        render();
-}
-
-void Env::lab_dilation() {
-    uint8_t* res = dilation_lab(*image, {255, 0, 0}, shape);
+    uint8_t* res = erosion_hsv_sv(*image, shape);
     image->update_char_data(res);
+    free(res);
     render();
 }
 
-void Env::lab_erosion() {
-    uint8_t* res = erosion_lab(*image, {255, 0, 0}, shape);
+void Env::lab_dilation(uint8_t r, uint8_t g, uint8_t b) {
+    uint8_t* res = dilation_lab(*image, {r, g, b}, shape);
     image->update_char_data(res);
+    free(res);
     render();
 }
 
+void Env::lab_erosion(uint8_t r, uint8_t g, uint8_t b) {
+    uint8_t* res = erosion_lab(*image, {r, g, b}, shape);
+    image->update_char_data(res);
+    free(res);
+    render();
+}
+
+void Env::bw_open() {
+    uint8_t* res = open_morpho(*image, shape);
+    image->update_char_data(res, true);
+    free(res);
+    render();
+}
+
+void Env::bw_close() {
+    uint8_t* res = close_morpho(*image, shape);
+    image->update_char_data(res, true);
+    free(res);
+    render();
+}

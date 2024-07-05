@@ -96,10 +96,8 @@ void App::Actions() {
     }
     ImGui::SameLine();
     ImGui::SliderInt("Size", &env.size, 1, 15);
-    if (ImGui::Button("B&W Dilation")) { env.bw_dilation(); }
-    ImGui::SameLine();
-    if (ImGui::Button("B&W Erosion")) { env.bw_erosion(); }
 
+    ImGui::Text("Dilation and Erosion");
     if (ImGui::Button("RGB Dilation")) { env.rgb_dilation(); }
     ImGui::SameLine();
     if (ImGui::Button("RGB Erosion")) { env.rgb_erosion(); }
@@ -116,9 +114,10 @@ void App::Actions() {
     ImGui::SameLine();
     if (ImGui::Button("HSV Erosion (SV)")) { env.hsv_erosion_sv(); }
 
-    if (ImGui::Button("LAB Dilation")) { env.lab_dilation(); }
+    ImGui::Text("Open and Close");
+    if (ImGui::Button("B&W Open")) { env.bw_open(); }
     ImGui::SameLine();
-    if (ImGui::Button("LAB Erosion")) { env.lab_erosion(); }
+    if (ImGui::Button("B&W Close")) { env.bw_close(); }
 }
 
 void App::ColorOptions() {
@@ -147,9 +146,9 @@ void App::ColorOptions() {
     if (display_mode == 4) flags |= ImGuiColorEditFlags_DisplayHex;
     ImGui::ColorPicker4("MyColor##4", (float*)&color, flags);
 
-    if (ImGui::Button("Update Color")) {
-        // Update Color
-    }
+    if (ImGui::Button("LAB Dilation")) { env.lab_dilation(color.x * 255, color.y * 255, color.z * 255); }
+    ImGui::SameLine();
+    if (ImGui::Button("LAB Erosion")) { env.lab_erosion(color.x * 255, color.y * 255, color.z * 255); }
 }
 
 void App::PrintObjInfo() const {

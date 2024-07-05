@@ -29,9 +29,6 @@ public:
     void create_texture();
     void render();
 
-    void bw_dilation();
-    void bw_erosion();
-
     void rgb_dilation();
     void rgb_erosion();
 
@@ -44,6 +41,9 @@ public:
     void hsv_dilation_sv();
     void hsv_erosion_sv();
 
-    void lab_dilation();
-    void lab_erosion();
+    void lab_dilation(uint8_t r, uint8_t g, uint8_t b);
+    void lab_erosion(uint8_t r, uint8_t g, uint8_t b);
+
+    void bw_open();
+    void bw_close();
 };

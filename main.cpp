@@ -68,7 +68,7 @@ int main(int, char**)
 #endif
 
     // Create window with graphics context
-    GLFWwindow* window = glfwCreateWindow(1920, 1080, "Blender Eco ++", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(1920, 1080, "Morpho de Morpho", nullptr, nullptr);
     if (window == nullptr)
         return 1;
     glfwMakeContextCurrent(window);
