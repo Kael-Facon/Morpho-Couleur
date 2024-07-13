@@ -44,6 +44,9 @@ public:
     void lab_dilation(uint8_t r, uint8_t g, uint8_t b);
     void lab_erosion(uint8_t r, uint8_t g, uint8_t b);
 
+    void bw_dilation();
+    void bw_erosion();
+
     void bw_open();
     void bw_close();
 };

@@ -98,6 +98,10 @@ void App::Actions() {
     ImGui::SliderInt("Size", &env.size, 1, 15);
 
     ImGui::Text("Dilation and Erosion");
+    if (ImGui::Button("BW Dilation")) { env.bw_dilation(); }
+    ImGui::SameLine();
+    if (ImGui::Button("BW Erosion")) { env.bw_erosion(); }
+
     if (ImGui::Button("RGB Dilation")) { env.rgb_dilation(); }
     ImGui::SameLine();
     if (ImGui::Button("RGB Erosion")) { env.rgb_erosion(); }

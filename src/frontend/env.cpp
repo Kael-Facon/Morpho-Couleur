@@ -109,16 +109,34 @@ void Env::lab_erosion(uint8_t r, uint8_t g, uint8_t b) {
     render();
 }
 
+void Env::bw_dilation() {
+    uint8_t* res = dilation_bw(*image, shape);
+    image->update_char_data(res);
+    image->update_color_data();
+    free(res);
+    render();
+}
+
+void Env::bw_erosion() {
+    uint8_t* res = erosion_bw(*image, shape);
+    image->update_char_data(res);
+    image->update_color_data();
+    free(res);
+    render();
+}
+
 void Env::bw_open() {
-    uint8_t* res = open_morpho(*image, shape);
-    image->update_char_data(res, true);
+    uint8_t* res = open_morpho_bw(*image, shape);
+    image->update_char_data(res);
+    image->update_color_data();
     free(res);
     render();
 }
 
 void Env::bw_close() {
-    uint8_t* res = close_morpho(*image, shape);
-    image->update_char_data(res, true);
+    uint8_t* res = close_morpho_bw(*image, shape);
+    image->update_char_data(res);
+    image->update_color_data();
     free(res);
     render();
 }

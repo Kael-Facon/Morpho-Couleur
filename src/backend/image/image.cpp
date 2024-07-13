@@ -256,6 +256,33 @@ uint8_t* Image::get_gray(float r_ratio, float g_ratio, float b_ratio) const
     return gray_buffer;
 }
 
+uint8_t* Image::get_gray_3() const
+{
+    return get_gray_3(0.25, 0.6, 0.15);
+}
+
+uint8_t* Image::get_gray_3(float r_ratio, float g_ratio, float b_ratio) const
+{
+    uint8_t* gray_buffer = (uint8_t*) malloc(width * height * sizeof(uint8_t) * 3);
+
+    float total_ratio = r_ratio + g_ratio + b_ratio;
+    r_ratio /= total_ratio;
+    g_ratio /= total_ratio;
+    b_ratio /= total_ratio;
+
+    for (unsigned int j = 0; j < height; ++j)
+        for (unsigned int i = 0; i < width; ++i)
+        {
+            uint8_t gray = data[i][j].get_gray(r_ratio, g_ratio, b_ratio);
+
+            gray_buffer[(i + j * width) * 3 + 0] = gray;
+            gray_buffer[(i + j * width) * 3 + 1] = gray;
+            gray_buffer[(i + j * width) * 3 + 2] = gray;
+        }
+
+    return gray_buffer;
+}
+
 uint8_t* Image::get_char_data_copy() const
 {
     uint8_t* color_buffer = (uint8_t*) malloc(width * height * sizeof(uint8_t) * 3);

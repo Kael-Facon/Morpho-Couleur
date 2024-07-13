@@ -51,6 +51,9 @@ public:
     uint8_t* get_gray() const;
     uint8_t* get_gray(float r_ratio, float g_ratio, float b_ratio) const;
 
+    uint8_t* get_gray_3() const;
+    uint8_t* get_gray_3(float r_ratio, float g_ratio, float b_ratio) const;
+
     uint8_t* get_char_data_copy() const;
 
     uint8_t* get_channel(IMAGE_CHANNEL chan);
