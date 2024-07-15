@@ -15,6 +15,9 @@
 #include "../backend/morpho/morpho_hsv.hh"
 #include "../backend/morpho/morpho_bw.hh"
 
+#define WIDTH 1920
+#define HEIGHT 1080
+
 class Env {
 public:
     GLuint render_image{};
