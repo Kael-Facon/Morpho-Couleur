@@ -37,8 +37,11 @@ public:
     void update_char_data(unsigned int i, unsigned int j);
     void update_char_data(unsigned int i, unsigned int j, Color c);
     void update_char_data(unsigned char *data, bool gray=false);
+    void update_char_data_thread_1(int start, int end, unsigned char *data_);
+    void update_char_data_thread_2(int start, int end, unsigned char *data_);
 
     void update_color_data();
+    void update_color_data_thread(int start, int end);
 
     void convert_image(IMAGE_TYPE new_type);
     void convert_thread(IMAGE_TYPE new_type, int start, int end);
@@ -47,6 +50,7 @@ public:
 
     void to_gray();
     void to_gray(float r_ratio, float g_ratio, float b_ratio);
+    void to_gray_thread(int start, int end, float r_ratio, float g_ratio, float b_ratio);
 
     uint8_t* get_gray() const;
     uint8_t* get_gray(float r_ratio, float g_ratio, float b_ratio) const;

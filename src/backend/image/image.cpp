@@ -50,36 +50,84 @@ void Image::update_char_data()
             update_char_data(i , j);
 }
 
-void Image::update_char_data(unsigned char *data_, bool gray)
+void Image::update_char_data_thread_1(int start, int end, unsigned char *data_)
 {
-    if (gray)
-        for (unsigned int j = 0; j < height; ++j)
-            for (unsigned int i = 0; i < width; ++i)
-            {
-                char_data[(i + j * width) * 3 + 0] = data_[(i + j * width)];
-                char_data[(i + j * width) * 3 + 1] = data_[(i + j * width)];
-                char_data[(i + j * width) * 3 + 2] = data_[(i + j * width)];
-            }
-
-    else
-        for (unsigned int j = 0; j < height; ++j)
-            for (unsigned int i = 0; i < width; ++i)
-            {
-                char_data[(i + j * width) * 3 + 0] = data_[(i + j * width) * 3];
-                char_data[(i + j * width) * 3 + 1] = data_[(i + j * width) * 3 + 1];
-                char_data[(i + j * width) * 3 + 2] = data_[(i + j * width) * 3 + 2];
-            }
+    for (unsigned int j = start; j < end; ++j)
+    {
+        for (unsigned int i = 0; i < width; ++i)
+        {
+            char_data[(i + j * width) * 3 + 0] = data_[(i + j * width)];
+            char_data[(i + j * width) * 3 + 1] = data_[(i + j * width)];
+            char_data[(i + j * width) * 3 + 2] = data_[(i + j * width)];
+        }
+    }
 }
 
-void Image::update_color_data()
+void Image::update_char_data_thread_2(int start, int end, unsigned char *data_)
 {
-    for (unsigned int j = 0; j < height; ++j)
+    for (unsigned int j = start; j < end; ++j)
+    {
+        for (unsigned int i = 0; i < width; ++i)
+        {
+            char_data[(i + j * width) * 3 + 0] = data_[(i + j * width) * 3];
+            char_data[(i + j * width) * 3 + 1] = data_[(i + j * width) * 3 + 1];
+            char_data[(i + j * width) * 3 + 2] = data_[(i + j * width) * 3 + 2];
+        }
+    }
+}
+
+void Image::update_char_data(unsigned char *data_, bool gray)
+{
+    const unsigned int numThreads = std::thread::hardware_concurrency();
+    std::vector<std::thread> threads;
+    int batchSize = height / numThreads;
+    int start = 0;
+    int end = 0;
+    if (gray)
+        for (int i = 0; i < numThreads; ++i) {
+            end = (i == numThreads - 1) ? height : start + batchSize;
+            threads.emplace_back(&Image::update_char_data_thread_1, this, start, end, data_);
+            start = end;
+        }
+
+    else
+        for (int i = 0; i < numThreads; ++i) {
+            end = (i == numThreads - 1) ? height : start + batchSize;
+            threads.emplace_back(&Image::update_char_data_thread_2, this, start, end, data_);
+            start = end;
+        }
+    for (auto& t : threads)
+        t.join();
+}
+
+void Image::update_color_data_thread(int start, int end)
+{
+    for (unsigned int j = start; j < end; ++j)
+    {
         for (unsigned int i = 0; i < width; ++i)
         {
             data.at(i).at(j).r = char_data[(i + j * width) * 3] / 255.f;
             data.at(i).at(j).g = char_data[(i + j * width) * 3 + 1] / 255.f;
             data.at(i).at(j).b = char_data[(i + j * width) * 3 + 2] / 255.f;
         }
+    }
+}
+
+void Image::update_color_data()
+{
+    const unsigned int numThreads = std::thread::hardware_concurrency();
+    std::vector<std::thread> threads;
+    int batchSize = height / numThreads;
+    int start = 0;
+    int end = 0;
+
+    for (int i = 0; i < numThreads; ++i) {
+        end = (i == numThreads - 1) ? height : start + batchSize;
+        threads.emplace_back(&Image::update_color_data_thread, this, start, end);
+        start = end;
+    }
+    for (auto& t : threads)
+        t.join();
 }
 
 Color rgb_to_hsv(Color c) {
@@ -223,6 +271,13 @@ void Image::to_gray()
     to_gray(0.25, 0.6, 0.15);
 }
 
+void Image::to_gray_thread(int start, int end, float r_ratio, float g_ratio, float b_ratio)
+{
+    for (unsigned int j = start; j < end; ++j)
+        for (unsigned int i = 0; i < width; ++i)
+            data[i][j].to_gray(r_ratio, g_ratio, b_ratio);
+}
+
 void Image::to_gray(float r_ratio, float g_ratio, float b_ratio)
 {
     float total_ratio = r_ratio + g_ratio + b_ratio;
@@ -230,9 +285,18 @@ void Image::to_gray(float r_ratio, float g_ratio, float b_ratio)
     g_ratio /= total_ratio;
     b_ratio /= total_ratio;
 
-    for (int j = 0; j < height; ++j)
-        for (int i = 0; i < width; ++i)
-            data[i][j].to_gray(r_ratio, g_ratio, b_ratio);
+    const unsigned int numThreads = std::thread::hardware_concurrency();
+    std::vector<std::thread> threads;
+    int batchSize = height / numThreads;
+    int start = 0;
+    int end = 0;
+    for (int i = 0; i < numThreads; ++i) {
+        end = (i == numThreads - 1) ? height : start + batchSize;
+        threads.emplace_back(&Image::to_gray_thread, this, start, end, r_ratio, g_ratio, b_ratio);
+        start = end;
+    }
+    for (auto& t : threads)
+        t.join();
 }
 
 uint8_t* Image::get_gray() const
