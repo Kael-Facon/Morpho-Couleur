@@ -97,31 +97,55 @@ void App::Actions() {
     ImGui::SameLine();
     ImGui::SliderInt("Size", &env.size, 1, 15);
 
-    ImGui::Text("Dilation and Erosion");
-    if (ImGui::Button("BW Dilation")) { env.bw_dilation(); }
+    // Gray
+    ImGui::Text("Gray");
+    if (ImGui::Button("Dilation_bw")) { env.morpho(dilation_bw); }
     ImGui::SameLine();
-    if (ImGui::Button("BW Erosion")) { env.bw_erosion(); }
+    if (ImGui::Button("Erosion_bw")) { env.morpho(erosion_bw); }
 
-    if (ImGui::Button("RGB Dilation")) { env.rgb_dilation(); }
+    if (ImGui::Button("Opening_bw")) { env.morpho(open_morpho_bw); }
     ImGui::SameLine();
-    if (ImGui::Button("RGB Erosion")) { env.rgb_erosion(); }
+    if (ImGui::Button("Closing_bw")) { env.morpho(close_morpho_bw); }
 
-    if (ImGui::Button("HSV Dilation (V)")) { env.hsv_dilation_v(); }
+    // RGB
+    ImGui::Text("RGB");
+    if (ImGui::Button("Dilation_rgb")) { env.morpho(dilation_rgb); }
     ImGui::SameLine();
-    if (ImGui::Button("HSV Erosion (V)")) { env.hsv_erosion_v(); }
+    if (ImGui::Button("Erosion_rgb")) { env.morpho(erosion_rgb); }
 
-    if (ImGui::Button("HSV Dilation (S)")) { env.hsv_dilation_s(); }
+    if (ImGui::Button("Opening_rgb")) { env.morpho(open_morpho_rgb); }
     ImGui::SameLine();
-    if (ImGui::Button("HSV Erosion (S)")) { env.hsv_erosion_s(); }
+    if (ImGui::Button("Closing_rgb")) { env.morpho(close_morpho_rgb); }
 
-    if (ImGui::Button("HSV Dilation (SV)")) { env.hsv_dilation_sv(); }
+    // HSV (Value)
+    ImGui::Text("HSV (Value)");
+    if (ImGui::Button("Dilation_hsv_v")) { env.morpho(dilation_hsv_v); }
     ImGui::SameLine();
-    if (ImGui::Button("HSV Erosion (SV)")) { env.hsv_erosion_sv(); }
+    if (ImGui::Button("Erosion_hsv_v")) { env.morpho(erosion_hsv_v); }
 
-    ImGui::Text("Open and Close");
-    if (ImGui::Button("B&W Open")) { env.bw_open(); }
+    if (ImGui::Button("Opening_hsv_v")) { env.morpho(open_morpho_hsv_v); }
     ImGui::SameLine();
-    if (ImGui::Button("B&W Close")) { env.bw_close(); }
+    if (ImGui::Button("Closing_hsv_v")) { env.morpho(close_morpho_hsv_v); }
+
+    // HSV (Saturation)
+    ImGui::Text("HSV (Saturation)");
+    if (ImGui::Button("Dilation_hsv_s")) { env.morpho(dilation_hsv_s); }
+    ImGui::SameLine();
+    if (ImGui::Button("Erosion_hsv_s")) { env.morpho(erosion_hsv_s); }
+
+    if (ImGui::Button("Opening_hsv_s")) { env.morpho(open_morpho_hsv_s); }
+    ImGui::SameLine();
+    if (ImGui::Button("Closing_hsv_s")) { env.morpho(close_morpho_hsv_s); }
+
+    // HSV (Saturation and Value)
+    ImGui::Text("HSV (Saturation and Value)");
+    if (ImGui::Button("Dilation_hsv_sv")) { env.morpho(dilation_hsv_sv); }
+    ImGui::SameLine();
+    if (ImGui::Button("Erosion_hsv_sv")) { env.morpho(erosion_hsv_sv); }
+
+    if (ImGui::Button("Opening_hsv_sv")) { env.morpho(open_morpho_hsv_sv); }
+    ImGui::SameLine();
+    if (ImGui::Button("Closing_hsv_sv")) { env.morpho(close_morpho_hsv_sv); }
 }
 
 void App::ColorOptions() {
@@ -150,9 +174,15 @@ void App::ColorOptions() {
     if (display_mode == 4) flags |= ImGuiColorEditFlags_DisplayHex;
     ImGui::ColorPicker4("MyColor##4", (float*)&color, flags);
 
-    if (ImGui::Button("LAB Dilation")) { env.lab_dilation(color.x * 255, color.y * 255, color.z * 255); }
+    // LAB
+    ImGui::Text("LAB");
+    if (ImGui::Button("Dilation_lab")) { env.morpho_lab(dilation_lab, color.x * 255, color.y * 255, color.z * 255); }
     ImGui::SameLine();
-    if (ImGui::Button("LAB Erosion")) { env.lab_erosion(color.x * 255, color.y * 255, color.z * 255); }
+    if (ImGui::Button("Erosion_lab")) { env.morpho_lab(erosion_lab, color.x * 255, color.y * 255, color.z * 255); }
+
+    if (ImGui::Button("Opening_lab")) { env.morpho_lab(open_morpho_lab, color.x * 255, color.y * 255, color.z * 255); }
+    ImGui::SameLine();
+    if (ImGui::Button("Closing_lab")) { env.morpho_lab(close_morpho_lab, color.x * 255, color.y * 255, color.z * 255); }
 }
 
 void App::PrintObjInfo() const {

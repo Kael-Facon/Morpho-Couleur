@@ -32,24 +32,6 @@ public:
     void create_texture();
     void render();
 
-    void rgb_dilation();
-    void rgb_erosion();
-
-    void hsv_dilation_s();
-    void hsv_erosion_s();
-
-    void hsv_dilation_v();
-    void hsv_erosion_v();
-
-    void hsv_dilation_sv();
-    void hsv_erosion_sv();
-
-    void lab_dilation(uint8_t r, uint8_t g, uint8_t b);
-    void lab_erosion(uint8_t r, uint8_t g, uint8_t b);
-
-    void bw_dilation();
-    void bw_erosion();
-
-    void bw_open();
-    void bw_close();
+    void morpho(uint8_t *(*method)(const Image& image_, const morpho_shape& shape_));
+    void morpho_lab(uint8_t *(*method)(const Image& image_, rgb24 color, const morpho_shape& shape_), uint8_t r, uint8_t g, uint8_t b);
 };
