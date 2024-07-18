@@ -4,12 +4,6 @@ using namespace std;
 
 App::App(){
     env = Env();
-    filename = "../data/morpho_couleur.ppm";
-}
-
-App::App(const char* filename_) {
-    filename = filename_;
-    env = Env(filename);
 }
 
 void App::Windows()
@@ -42,10 +36,25 @@ void App::Windows()
     }
 
     ImGui::SameLine();
-    if (ImGui::Button("Reinnitialize"))
+    if (ImGui::Button("Prev Image"))
+    {
+        index_image -= 1;
+        env.change_image();
+        env.render();
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Next Image"))
+    {
+        index_image += 1;
+        env.change_image();
+        env.render();
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Reinitialize"))
     {
         delete env.image;
-        env.image = load_image(filename);
+        slides[index_image] = load_image(slides_path[index_image]);
+        env.image = slides[index_image];
         env.render();
     }
 
@@ -221,7 +230,13 @@ void App::Inputs(const ImGuiIO& io, ImVec2 pos) {
             continue;
         ImGui::SameLine(); ImGui::Text((key < ImGuiKey_NamedKey_BEGIN) ? "\"%s\"" : "\"%s\" %d", ImGui::GetKeyName(key), key);
 //        if (key == 513) { // Left Arrow
-//            env.scene.move_camera_y(-15);
+//            index_image -= 1;
+//            env.change_image();
+//            env.render();
+//        }
+//        if (key == 514) { // Right Arrow
+//            index_image += 1;
+//            env.change_image();
 //            env.render();
 //        }
     }

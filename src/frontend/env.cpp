@@ -3,17 +3,18 @@
 int render_count = 0;
 
 Env::Env() {
-    image = new Image();
+    image = slides[index_image];
     shape = morpho_shape();
     render();
     create_texture();
 }
 
-Env::Env(const char* filename) {
-    image = load_image(filename);
-    shape = morpho_shape();
-    render();
-    create_texture();
+void Env::change_image() {
+    if (index_image == NB_IMAGES)
+        index_image = 0;
+    if (index_image < 0)
+        index_image = NB_IMAGES - 1;
+    image = slides[index_image];
 }
 
 void Env::create_texture() {

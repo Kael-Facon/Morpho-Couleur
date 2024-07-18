@@ -17,6 +17,20 @@ static void glfw_error_callback(int error, const char* description)
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
 
+void ToggleFullscreen(GLFWwindow* window)
+{
+    if (isFullscreen)
+        glfwSetWindowMonitor(window, nullptr, 0, 0, WIDTH, HEIGHT, 0);
+    else
+    {
+        monitor = glfwGetPrimaryMonitor();
+        mode = glfwGetVideoMode(monitor);
+        glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+    }
+
+    isFullscreen = !isFullscreen;
+}
+
 int main(int, char**)
 {
     glfwSetErrorCallback(glfw_error_callback);
@@ -70,16 +84,34 @@ int main(int, char**)
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     //TODO CODE HERE
-    auto app = App("../data/morpho_couleur.ppm");
-    //auto app = App("../data/sunset.ppm");
+    auto app = App();
     IM_ASSERT(app.env.image->width != 0);
     //TODO CODE HERE
 
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
-        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        if (glfwGetKey(window, GLFW_KEY_GRAVE_ACCENT) == GLFW_PRESS)
             break;
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+            ToggleFullscreen(window);
+            while (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+                glfwPollEvents();
+        }
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+            index_image -= 1;
+            app.env.change_image();
+            app.env.render();
+            while (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+                glfwPollEvents();
+        }
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+            index_image += 1;
+            app.env.change_image();
+            app.env.render();
+            while (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+                glfwPollEvents();
+        }
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();

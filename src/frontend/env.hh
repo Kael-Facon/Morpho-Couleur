@@ -18,6 +18,22 @@
 #define WIDTH 1920
 #define HEIGHT 1080
 
+inline bool isFullscreen = true;
+inline GLFWwindow* window = nullptr;
+inline GLFWmonitor* monitor = nullptr;
+inline const GLFWvidmode* mode = nullptr;
+
+#define NB_IMAGES 2
+inline std::string slides_path[NB_IMAGES] {
+        "../data/morpho_couleur.ppm",
+        "../data/sunset.ppm"
+};
+inline Image *slides[NB_IMAGES] = {
+        load_image(slides_path[0]),
+        load_image(slides_path[1])
+};
+inline int index_image = 0;
+
 class Env {
 public:
     GLuint render_image{};
@@ -27,8 +43,8 @@ public:
     morpho_shape shape;
 
     Env();
-    explicit Env(const char* filename);
 
+    void change_image();
     void create_texture();
     void render();
 
