@@ -14,6 +14,18 @@ void Env::change_image() {
         index_image = 0;
     if (index_image < 0)
         index_image = NB_IMAGES - 1;
+//    if (demo) {
+//        if (index_image == NB_DEMOs)
+//            index_image = 0;
+//        if (index_image < 0)
+//            index_image = NB_DEMOs - 1;
+//    }
+//    else {
+//        if (index_image == NB_IMAGES)
+//            index_image = 0;
+//        if (index_image < 0)
+//            index_image = NB_IMAGES - 1;
+//    }
     image = slides[index_image];
 }
 

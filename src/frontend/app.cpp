@@ -17,6 +17,42 @@ void App::Windows()
     ImGui::End();
 
     ImGui::Begin("Viewport");
+    if (ImGui::Button("Prev Image"))
+    {
+        index_image -= 1;
+        env.change_image();
+        env.render();
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Next Image"))
+    {
+        index_image += 1;
+        env.change_image();
+        env.render();
+    }
+//    ImGui::SameLine();
+//    if (ImGui::Button("Demo"))
+//    {
+//        demo = !demo;
+//        if (demo) {
+//            for (int i = 0; i < NB_IMAGES; ++i) {
+//                delete slides[i];
+//                if (i < NB_DEMOs)
+//                    slides[i] = load_image(demo_path[i]);
+//            }
+//        }
+//        else {
+//            for (int i = 0; i < NB_IMAGES; ++i) {
+//                if (i < NB_DEMOs)
+//                    delete slides[i];
+//                slides[i] = load_image(slides_path[i]);
+//            }
+//        }
+//        demo = !demo;
+//        index_image = 0;
+//        env.change_image();
+//        env.render();
+//    }
 
     ImGuiIO &io = ImGui::GetIO();
     ImVec2 pos = ImGui::GetCursorScreenPos();
@@ -35,20 +71,6 @@ void App::Windows()
         ImGui::EndPopup();
     }
 
-    ImGui::SameLine();
-    if (ImGui::Button("Prev Image"))
-    {
-        index_image -= 1;
-        env.change_image();
-        env.render();
-    }
-    ImGui::SameLine();
-    if (ImGui::Button("Next Image"))
-    {
-        index_image += 1;
-        env.change_image();
-        env.render();
-    }
     ImGui::SameLine();
     if (ImGui::Button("Reinitialize"))
     {
