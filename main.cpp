@@ -194,5 +194,16 @@ int main(int, char**)
     glfwDestroyWindow(window);
     glfwTerminate();
 
+    std::filesystem::path cwd = std::filesystem::current_path() / ".." / "morpho_couleur.tga";
+    std::cout << cwd << std::endl;
+
+    create_diamond(); create_disk(); create_square();
+    std::cout << morpho_square << '\n' << morpho_diamond << '\n';
+
+    tifo::rgb24_image* image = tifo::load_image("../morpho_couleur.tga");
+    tifo::gray8_image *bw = tifo::rgb_to_gray(*image);
+    tifo::rgb24_image rgb_bw = tifo::rgb24_image(*bw);
+    tifo::save_image(rgb_bw, "test.tga");
+
     return 0;
 }

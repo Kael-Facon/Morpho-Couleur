@@ -1,5 +1,14 @@
 #include <algorithm>
 #include "image.hh"
+#include <cstdlib>
+#include <iostream>
+
+
+namespace tifo {
+
+gray8_image::gray8_image(int _sx, int _sy) {
+    sx = _sx;
+    sy = _sy;
 
 static float aspect_ratio = 16.0f / 9.0f;
 static int default_width = 1600;
@@ -376,7 +385,12 @@ uint8_t* Image::get_channel(IMAGE_CHANNEL chan)
     return channel;
 }
 
-void Image::save_as_ppm(const std::string& pathname)
+RGB8& rgb24_image::get_buffer() {
+    return pixels;
+}
+
+
+gray8_image rgb24_image::get_channel(int j) const
 {
     update_color_data();
     std::ofstream ofs;
@@ -400,14 +414,49 @@ Image *load_image(const std::string& path_name) {
         std::cerr << "Error Image: Unable to open file." << std::endl;
         return nullptr;
     }
+    else {
+        s = (max - min) / max;
 
-    std::string magicNumber;
-    int maxColor, width, height;
-    ifs >> magicNumber >> width >> height >> maxColor;
+        if (max == r) {
+            h = 60 * ((g - b) / (max - min)) + 0;
+        }
+        else if (max == g) {
+            h = 60 * ((b - r) / (max - min)) + 120;
+        }
+        else {
+            h = 60 * ((r - g) / (max - min)) + 240;
+        }
+    }
 
-    if (magicNumber != "P6" || maxColor != 255) {
-        std::cerr << "Error Image: Invalid headers." << std::endl;
-        return {};
+    if (h < 0) h += 360.0f;
+
+    *r_ = (uint8_t)(h / 2);   // dst_h : 0-180
+    *g_ = (uint8_t)(s * 255); // dst_s : 0-255
+    *b_ = (uint8_t)(v * 255); // dst_v : 0-255
+}
+
+
+void convert_rgb(uint8_t* h_, uint8_t* s_, uint8_t* v_)
+{
+    float h = *h_ *   2.0f; // 0-360
+    float s = *s_ / 255.0f; // 0.0-1.0
+    float v = *v_ / 255.0f; // 0.0-1.0
+
+    float r, g, b; // 0.0-1.0
+
+    int   hi = (int)(h / 60.0f) % 6;
+    float f  = (h / 60.0f) - hi;
+    float p  = v * (1.0f - s);
+    float q  = v * (1.0f - s * f);
+    float t  = v * (1.0f - s * (1.0f - f));
+
+    switch(hi) {
+        case 0: r = v, g = t, b = p; break;
+        case 1: r = q, g = v, b = p; break;
+        case 2: r = p, g = v, b = t; break;
+        case 3: r = p, g = q, b = v; break;
+        case 4: r = t, g = p, b = v; break;
+        default: r = v, g = p, b = q; break;
     }
     ifs.get();
 
