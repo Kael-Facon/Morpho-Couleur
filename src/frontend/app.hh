@@ -3,14 +3,13 @@
 #include "env.hh"
 
 class App {
-public:
+    public:
     Env env;
 
     App();
+    explicit App(const char* filename);
 
     void Windows();
-    void ColorOptions();
-    void Actions();
-    void PrintObjInfo() const;
-    void Inputs(const ImGuiIO& io, ImVec2 pos);
+    void TreeNode();
+    void PrintObjInfo();
 };

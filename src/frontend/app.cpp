@@ -6,263 +6,121 @@ App::App(){
     env = Env();
 }
 
+App::App(const char* filename) {
+    env = Env(filename);
+}
+
 void App::Windows()
 {
-    ImGui::Begin("Actions");
-    Actions();
-    ImGui::End();
-
-    ImGui::Begin("Color Options");
-    ColorOptions();
-    ImGui::End();
-
     ImGui::Begin("Viewport");
-    if (ImGui::Button("Prev Image"))
-    {
-        index_image -= 1;
-        env.change_image();
-        env.render();
-    }
+    ImGui::Text("pointer = %x", env.render_image);
     ImGui::SameLine();
-    if (ImGui::Button("Next Image"))
-    {
-        index_image += 1;
-        env.change_image();
-        env.render();
-    }
-    string text = to_string(index_image + 1) + " / " + to_string(NB_IMAGES);
-    ImGui::SameLine();
-    ImGui::Text(text.c_str());
-//    ImGui::SameLine();d
-//    if (ImGui::Button("Demo"))
-//    {
-//        demo = !demo;
-//        if (demo) {
-//            for (int i = 0; i < NB_IMAGES; ++i) {
-//                delete slides[i];
-//                if (i < NB_DEMOs)
-//                    slides[i] = load_image(demo_path[i]);
-//            }
-//        }
-//        else {
-//            for (int i = 0; i < NB_IMAGES; ++i) {
-//                if (i < NB_DEMOs)
-//                    delete slides[i];
-//                slides[i] = load_image(slides_path[i]);
-//            }
-//        }
-//        demo = !demo;
-//        index_image = 0;
-//        env.change_image();
-//        env.render();
-//    }
-
-    ImGuiIO &io = ImGui::GetIO();
-    ImVec2 pos = ImGui::GetCursorScreenPos();
+    ImGui::Text("size = %d x %d", env.image.width, env.image.height);
     ImGui::Image((void*)(intptr_t)env.render_image,
-                 ImVec2(static_cast<float>(env.image->width), static_cast<float>(env.image->height)));
+                 ImVec2(static_cast<float>(env.image.width), static_cast<float>(env.image.height)));
+    ImGui::End();
 
-    if (ImGui::Button("Save Render"))
-        ImGui::OpenPopup("save_render");
-    if (ImGui::BeginPopup("save_render"))
-    {
-        static char filename[128] = "";
-        ImGui::InputText("File Name", filename, IM_ARRAYSIZE(filename));
-        ImGui::SameLine();
-        if (ImGui::Button("Save file"))
-            env.image->save_as_ppm("../test/" + string(filename) + ".ppm");
-        ImGui::EndPopup();
-    }
+    App::TreeNode();
 
+    ImGui::Begin("Actions");
+
+    // env.image.render(env.scene, true);
+    // env.image.save_as_ppm("test.ppm");
+
+    if (ImGui::Button("Render")) { env.render(); }
+
+    static float c1 = 1.00f;
+    if (ImGui::Button("Move Camera X")) { env.move_camera(); }
     ImGui::SameLine();
-    if (ImGui::Button("Reinitialize"))
-    {
-        delete env.image;
-        slides[index_image] = load_image(slides_path[index_image]);
-        env.image = slides[index_image];
-        env.render();
-    }
+    ImGui::DragFloat("Cam X", &c1, 0.005f);
 
-
+    static float c2 = 1.00f;
+    if (ImGui::Button("Move Camera Y")) { env.move_camera(); }
     ImGui::SameLine();
-    Inputs(io, pos);
+    ImGui::DragFloat("Cam Y", &c2, 0.005f);
+
+    static float c3 = 1.00f;
+    if (ImGui::Button("Move Camera Z")) { env.move_camera(); }
+    ImGui::SameLine();
+    ImGui::DragFloat("Cam Z", &c3, 0.005f);
+
+    static float v1 = 1.00f;
+    if (ImGui::Button("Move X")) { env.move_x(v1); }
+    ImGui::SameLine();
+    ImGui::DragFloat("X", &v1, 0.005f);
+
+    static float v2 = 1.00f;
+    if (ImGui::Button("Move Y")) { env.move_y(v2); }
+    ImGui::SameLine();
+    ImGui::DragFloat("Y", &v2, 0.005f);
+
+    static float v3 = 1.00f;
+    if (ImGui::Button("Move Z")) { env.move_z(v3); }
+    ImGui::SameLine();
+    ImGui::DragFloat("Z", &v3, 0.005f);
+
+    static float radius = 1.00f;
+    ImGui::DragFloat("Radius", &radius, 0.005f);
+    if (ImGui::Button("Grow")) { env.grow(radius); }
+    ImGui::SameLine();
+    if (ImGui::Button("Shrink")) { env.shrink(radius); }
+
+
+    if (ImGui::Button("Save Render")) { env.image.save_as_ppm("../test/result.ppm"); }
 
     ImGui::End();
 
 //    ImGui::ShowDemoWindow();
 }
 
-void App::Actions() {
-    if (ImGui::RadioButton("Disk", &env.form, 0)) {
-        env.shape = morpho_shape(env.size, static_cast<morpho_shape::type>(env.form));
-        env.render();
-    }
-    ImGui::SameLine();
-    if (ImGui::RadioButton("Square", &env.form, 1)) {
-        env.shape = morpho_shape(env.size, static_cast<morpho_shape::type>(env.form));
-        env.render();
-    }
-    ImGui::SameLine();
-    if (ImGui::RadioButton("Diamond", &env.form, 2)) {
-        env.shape = morpho_shape(env.size, static_cast<morpho_shape::type>(env.form));
-        env.render();
-    }
-    if (ImGui::RadioButton("Morpho", &env.form, 3)) {
-        env.shape = morpho_shape(env.size, static_cast<morpho_shape::type>(env.form));
-        env.render();
-    }
-    ImGui::SameLine();
-    if (ImGui::RadioButton("Bow Tie", &env.form, 4)) {
-        env.shape = morpho_shape(env.size, static_cast<morpho_shape::type>(env.form));
-        env.render();
-    }
-    ImGui::SameLine();
-    if (ImGui::RadioButton("Rabbit", &env.form, 5)) {
-        env.shape = morpho_shape(env.size, static_cast<morpho_shape::type>(env.form));
-        env.render();
-    }
-//    ImGui::SameLine();
-//    if (ImGui::RadioButton("No Grid", &env.form, 1)) { env.render(); }
-
-    if (ImGui::Button("Update")) {
-        env.shape = morpho_shape(env.size, static_cast<morpho_shape::type>(env.form));
-        env.render();
-    }
-    ImGui::SameLine();
-    ImGui::SliderInt("Size", &env.size, 1, 15);
-
-    // Gray
-    ImGui::Text("Gray");
-    if (ImGui::Button("Dilation_bw")) { env.morpho(dilation_bw); }
-    ImGui::SameLine();
-    if (ImGui::Button("Erosion_bw")) { env.morpho(erosion_bw); }
-
-    if (ImGui::Button("Opening_bw")) { env.morpho(open_morpho_bw); }
-    ImGui::SameLine();
-    if (ImGui::Button("Closing_bw")) { env.morpho(close_morpho_bw); }
-
-    // RGB
-    ImGui::Text("RGB");
-    if (ImGui::Button("Dilation_rgb")) { env.morpho(dilation_rgb); }
-    ImGui::SameLine();
-    if (ImGui::Button("Erosion_rgb")) { env.morpho(erosion_rgb); }
-
-    if (ImGui::Button("Opening_rgb")) { env.morpho(open_morpho_rgb); }
-    ImGui::SameLine();
-    if (ImGui::Button("Closing_rgb")) { env.morpho(close_morpho_rgb); }
-
-    // HSV (Value)
-    ImGui::Text("HSV (Value)");
-    if (ImGui::Button("Dilation_hsv_v")) { env.morpho(dilation_hsv_v); }
-    ImGui::SameLine();
-    if (ImGui::Button("Erosion_hsv_v")) { env.morpho(erosion_hsv_v); }
-
-    if (ImGui::Button("Opening_hsv_v")) { env.morpho(open_morpho_hsv_v); }
-    ImGui::SameLine();
-    if (ImGui::Button("Closing_hsv_v")) { env.morpho(close_morpho_hsv_v); }
-
-    // HSV (Saturation)
-    ImGui::Text("HSV (Saturation)");
-    if (ImGui::Button("Dilation_hsv_s")) { env.morpho(dilation_hsv_s); }
-    ImGui::SameLine();
-    if (ImGui::Button("Erosion_hsv_s")) { env.morpho(erosion_hsv_s); }
-
-    if (ImGui::Button("Opening_hsv_s")) { env.morpho(open_morpho_hsv_s); }
-    ImGui::SameLine();
-    if (ImGui::Button("Closing_hsv_s")) { env.morpho(close_morpho_hsv_s); }
-
-    // HSV (Saturation and Value)
-    ImGui::Text("HSV (Saturation and Value)");
-    if (ImGui::Button("Dilation_hsv_sv")) { env.morpho(dilation_hsv_sv); }
-    ImGui::SameLine();
-    if (ImGui::Button("Erosion_hsv_sv")) { env.morpho(erosion_hsv_sv); }
-
-    if (ImGui::Button("Opening_hsv_sv")) { env.morpho(open_morpho_hsv_sv); }
-    ImGui::SameLine();
-    if (ImGui::Button("Closing_hsv_sv")) { env.morpho(close_morpho_hsv_sv); }
-}
-
-void App::ColorOptions() {
-    static bool alpha_preview = true;
-    static bool alpha_half_preview = false;
-    static bool drag_and_drop = true;
-    static bool options_menu = true;
-    static bool hdr = false;
-    ImGuiColorEditFlags misc_flags = (hdr ? ImGuiColorEditFlags_HDR : 0) | (drag_and_drop ? 0 : ImGuiColorEditFlags_NoDragDrop) | (alpha_half_preview ? ImGuiColorEditFlags_AlphaPreviewHalf : (alpha_preview ? ImGuiColorEditFlags_AlphaPreview : 0)) | (options_menu ? 0 : ImGuiColorEditFlags_NoOptions);
-
-    Color cc = Color(1.0,1.0,1.0);
-    static ImVec4 color = ImVec4(cc.r, cc.g, cc.b, 255.0f / 255.0f);
-    static bool side_preview = true;
-    static int display_mode = 0;
-    static int picker_mode = 0;
-    ImGui::Checkbox("With Side Preview", &side_preview);
-
-    ImGui::Combo("Display Mode", &display_mode, "Auto/Current\0None\0RGB Only\0HSV Only\0Hex Only\0");
-    ImGuiColorEditFlags flags = misc_flags;
-    if (!side_preview)     flags |= ImGuiColorEditFlags_NoSidePreview;
-    if (picker_mode == 1)  flags |= ImGuiColorEditFlags_PickerHueBar;
-    if (picker_mode == 2)  flags |= ImGuiColorEditFlags_PickerHueWheel;
-    if (display_mode == 1) flags |= ImGuiColorEditFlags_NoInputs;
-    if (display_mode == 2) flags |= ImGuiColorEditFlags_DisplayRGB;
-    if (display_mode == 3) flags |= ImGuiColorEditFlags_DisplayHSV;
-    if (display_mode == 4) flags |= ImGuiColorEditFlags_DisplayHex;
-    ImGui::ColorPicker4("MyColor##4", (float*)&color, flags);
-
-    // LAB
-    ImGui::Text("LAB");
-    if (ImGui::Button("Dilation_lab")) { env.morpho_lab(dilation_lab, color.x * 255, color.y * 255, color.z * 255); }
-    ImGui::SameLine();
-    if (ImGui::Button("Erosion_lab")) { env.morpho_lab(erosion_lab, color.x * 255, color.y * 255, color.z * 255); }
-
-    if (ImGui::Button("Opening_lab")) { env.morpho_lab(open_morpho_lab, color.x * 255, color.y * 255, color.z * 255); }
-    ImGui::SameLine();
-    if (ImGui::Button("Closing_lab")) { env.morpho_lab(close_morpho_lab, color.x * 255, color.y * 255, color.z * 255); }
-}
-
-void App::PrintObjInfo() const {
-    ImGui::Text("Nothing to Print");
-}
-
-void App::Inputs(const ImGuiIO& io, ImVec2 pos) {
-    float region_sz = 32.0f;
-    float region_x = io.MousePos.x - pos.x - region_sz * 0.5f;
-    float region_y = io.MousePos.y - pos.y - region_sz * 0.5f;
-    if (region_x < 0.0f) { return; }
-    else if (region_x > 1600 - region_sz) { return; }
-    if (region_y < 0.0f) { return; }
-    else if (region_y > 900 - region_sz) { return; }
-    ImGui::Text("Min: (%.2f, %.2f)", region_x, region_y);
-    ImGui::SameLine();
-    ImGui::Text("Mouse down:");
-    for (int i = 0; i < IM_ARRAYSIZE(io.MouseDown); i++) {
-        if (io.MouseDownDuration[i] > 0.01)
-            return;
-        if (ImGui::IsMouseDown(i)) {
-            env.render();
+void App::TreeNode() {
+    ImGui::Begin("Tree");
+    static ImGuiTreeNodeFlags base_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
+    static bool align_label_with_current_x_position = false;
+    if (ImGui::TreeNode("Objects"))
+    {
+        static int selection_mask = (1 << 2);
+        int node_clicked = -1;
+        for (int i = 0; i < env.scene.objects.size(); i++)
+        {
+            ImGuiTreeNodeFlags node_flags = base_flags;
+            const bool is_selected = (selection_mask & (1 << i)) != 0;
+            if (is_selected)
+                node_flags |= ImGuiTreeNodeFlags_Selected;
+            node_flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+            string obj_type = typeid(*env.scene.objects[i]).name();
+            ImGui::TreeNodeEx((void*)(intptr_t)i, node_flags, "%d Object %s", i, obj_type.c_str());
+            if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) {
+                node_clicked = i;
+                // BEHAVIOR IS HERE
+                env.change_focus(i, env.scene.objects[i]);
+            }
         }
+        if (node_clicked != -1)
+            selection_mask = (1 << node_clicked);
+        if (align_label_with_current_x_position)
+            ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
+        ImGui::TreePop();
     }
-    ImGui::SameLine();
-    ImGui::Text("Keys down:");
-    struct funcs {
-        static bool IsLegacyNativeDupe(ImGuiKey key) {
-            return key >= 0 && key < 512 && ImGui::GetIO().KeyMap[key] != -1;
-        }
-    };
+    PrintObjInfo();
+    ImGui::End();
+}
 
-    auto start_key = (ImGuiKey)0;
-    for (ImGuiKey key = start_key; key < ImGuiKey_NamedKey_END; key = (ImGuiKey)(key + 1)) {
-        if (funcs::IsLegacyNativeDupe(key) || !ImGui::IsKeyDown(key))
-            continue;
-        ImGui::SameLine(); ImGui::Text((key < ImGuiKey_NamedKey_BEGIN) ? "\"%s\"" : "\"%s\" %d", ImGui::GetKeyName(key), key);
-//        if (key == 513) { // Left Arrow
-//            index_image -= 1;
-//            env.change_image();
-//            env.render();
-//        }
-//        if (key == 514) { // Right Arrow
-//            index_image += 1;
-//            env.change_image();
-//            env.render();
-//        }
-    }
+void App::PrintObjInfo() {
+    string obj_type = env.focus_obj.obj_type;
+    string text = "type : " + obj_type + "\n";
+    if (obj_type == "Sphere")
+        text += "Center : " + env.focus_obj.origin.to_string() + "\n"
+                + "Radius : " + std::to_string(env.focus_obj.radius);
+    if (obj_type == "Plane")
+        text += "Origin : " + env.focus_obj.origin.to_string() + "\n"
+                + "Normal : " + env.focus_obj.normal_.to_string() + "\n"
+                + "Grille : " + std::to_string(env.focus_obj.grille);
+    if (obj_type == "Triangle")
+        text += "A : " + env.focus_obj.a.to_string() + "\n"
+                "B : " + env.focus_obj.b.to_string() + "\n"
+                "C : " + env.focus_obj.c.to_string() + "\n"
+                + "Normal : " + env.focus_obj.normal_.to_string();
+//    if (obj_type == "Mesh")
+    ImGui::Text(text.c_str());
 }
