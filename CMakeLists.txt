@@ -3,50 +3,71 @@ project(morpho_couleur)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(morpho_couleur 
-        # Main        
-        main.cpp
-        
-        ## Backend
-        src/backend/utils.hh
-        
-        ### Backend Shapes
-        src/backend/shapes/shape.hh
-        src/backend/shapes/diamond.hh
-        src/backend/shapes/disk.hh
-        src/backend/shapes/square.hh
+add_executable(morpho_couleur main.cpp
+        # Frontend
+        src/frontend/imgui/imconfig.h
+        src/frontend/imgui/imgui.cpp
+        src/frontend/imgui/imgui.h
+        src/frontend/imgui/imgui_demo.cpp
+        src/frontend/imgui/imgui_draw.cpp
+        src/frontend/imgui/imgui_internal.h
+        src/frontend/imgui/imgui_tables.cpp
+        src/frontend/imgui/imgui_widgets.cpp
+        src/frontend/imgui/imstb_rectpack.h
+        src/frontend/imgui/imstb_textedit.h
+        src/frontend/imgui/imstb_truetype.h
+        src/frontend/imgui/imgui_impl_glfw.cpp
+        src/frontend/imgui/imgui_impl_opengl3.cpp
+        src/frontend/imgui/imgui_impl_glfw.h
+        src/frontend/imgui/imgui_impl_opengl3.h
+        src/frontend/imgui/imgui_impl_opengl3_loader.h
+        src/frontend/app.cpp
+        src/frontend/app.hh
+        src/frontend/env.hh
+        src/frontend/env.cpp
 
-        ### Backend Image
-        src/backend/image/image_io.hh
-        src/backend/image/image_io.cpp
+        # Backend
+        ## utils
+        src/backend/utils/vector3.hh
+        src/backend/utils/vector3.cpp
+        src/backend/utils/color.hh
+        src/backend/utils/color.cpp
+        src/backend/utils/color_hsv.hh
+        src/backend/utils/color_hsv.cpp
+        src/backend/utils/color_lab.hh
+        src/backend/utils/color_lab.cpp
+        src/backend/utils/utils.hh
+
+        ## image
         src/backend/image/image.hh
         src/backend/image/image.cpp
 
-        # src/frontend/imgui/imconfig.h
-        # src/frontend/imgui/imgui.cpp
-        # src/frontend/imgui/imgui.h
-        # src/frontend/imgui/imgui_demo.cpp
-        # src/frontend/imgui/imgui_draw.cpp
-        # src/frontend/imgui/imgui_internal.h
-        # src/frontend/imgui/imgui_tables.cpp
-        # src/frontend/imgui/imgui_widgets.cpp
-        # src/frontend/imgui/imstb_rectpack.h
-        # src/frontend/imgui/imstb_textedit.h
-        # src/frontend/imgui/imstb_truetype.h
-        # src/frontend/imgui/imgui_impl_glfw.cpp
-        # src/frontend/imgui/imgui_impl_opengl3.cpp
-        # src/frontend/imgui/imgui_impl_glfw.h
-        # src/frontend/imgui/imgui_impl_opengl3.h
-        # src/frontend/imgui/imgui_impl_opengl3_loader.h
-        # src/frontend/app.cpp
-        # src/frontend/app.hh
-        # src/frontend/env.hh
-        # src/frontend/env.cpp
-        # src/frontend/action.hh
-        # src/frontend/action.cpp
+        ## intersection
+        src/backend/intersection/intersection.hh
+        src/backend/intersection/intersection.cpp
+        src/backend/intersection/intersection.cpp
 
-        # src/backend/image/image.hh
-        # src/backend/image/image.cpp
+        ## shapes
+        src/backend/shapes/shape.hh
+        src/backend/shapes/shape.cpp
+        src/backend/shapes/disk.cpp
+        src/backend/shapes/square.cpp
+        src/backend/shapes/diamond.cpp
+        src/backend/shapes/morpho.cpp
+        src/backend/shapes/bow_tie.cpp
+        src/backend/shapes/rabbit.cpp
+
+        ## morpho
+        src/backend/morpho/method.hh
+        src/backend/morpho/method.cpp
+        src/backend/morpho/morpho_bw.hh
+        src/backend/morpho/morpho_bw.cpp
+        src/backend/morpho/morpho_rgb.hh
+        src/backend/morpho/morpho_rgb.cpp
+        src/backend/morpho/morpho_hsv.hh
+        src/backend/morpho/morpho_hsv.cpp
+        src/backend/morpho/morpho_lab.hh
+        src/backend/morpho/morpho_lab.cpp
 )
 
 find_package(OpenGL REQUIRED)
@@ -54,29 +75,3 @@ target_link_libraries(morpho_couleur PUBLIC OpenGL::GL)
 
 find_package(glfw3 CONFIG REQUIRED)
 target_link_libraries(morpho_couleur PUBLIC glfw)
-
-target_include_directories(morpho_couleur PRIVATE ${OpenCV_INCLUDE_DIRS})
-
-
-## FOR DEBUG
-#
-#add_executable(blender_eco main_debug.cpp
-#        src/backend/utils/vector3.hh
-#        src/backend/utils/vector3.cpp
-#        src/backend/utils/color.hh
-#        src/backend/utils/color.cpp
-#        src/backend/image/image.hh
-#        src/backend/image/image.cpp
-#        src/backend/scene/object.hh
-#        src/backend/scene/object.cpp
-#        src/backend/scene/light.hh
-#        src/backend/scene/camera.hh
-#        src/backend/scene/camera.cpp
-#        src/backend/scene/scene.hh
-#        src/backend/scene/scene.cpp
-#        src/backend/utils/texture_material.hh
-#        src/backend/utils/texture_material.cpp
-#        src/backend/utils/utils.hh
-#        src/backend/render/intersection.hh
-#        src/backend/render/intersection.cpp
-#)

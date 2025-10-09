@@ -1,168 +1,73 @@
-//************************************************
-//*                                              *
-//*   TP 1&2    (c) 2017 J. FABRIZIO             *
-//*                                              *
-//*                               LRDE EPITA     *
-//*                                              *
-//************************************************
+#include <vector>
+#include <fstream>
+#include <thread>
+#include "../intersection/intersection.hh"
+#include "../utils/utils.hh"
 
+#define PI 3.14159265f
 
-#ifndef IMAGE_HH
-#define	IMAGE_HH
+enum IMAGE_TYPE {
+    RGB,
+    HSV,
+    GRAY,
+    NONE
+};
 
-#include <cstdint>
+enum IMAGE_CHANNEL
+{
+    R = 0,
+    G = 1,
+    B = 2,
+};
 
-#define IMAGE_NB_LEVELS 256
-#define IMAGE_MAX_LEVEL IMAGE_NB_LEVELS - 1
-#define TL_IMAGE_ALIGNMENT 64
+class Image {
+public:
+    int width = 0;
+    int height = 0;
+    IMAGE_TYPE image_type = IMAGE_TYPE::RGB;
+    std::vector<std::vector<Color>> data;
+    unsigned char* char_data;
 
-namespace tifo {
+    Image();
+    Image(int width_, int height_);
 
-typedef uint8_t* __restrict__ __attribute__((aligned(TL_IMAGE_ALIGNMENT))) GRAY8;
-typedef uint8_t* __restrict__ __attribute__((aligned(TL_IMAGE_ALIGNMENT))) RGB8;
-typedef uint8_t* __restrict__ __attribute__((aligned(TL_IMAGE_ALIGNMENT))) HSV8;
+    void update_char_data();
+    void update_char_data(unsigned int i, unsigned int j);
+    void update_char_data(unsigned int i, unsigned int j, Color c);
+    void update_char_data(unsigned char *data, bool gray=false);
+    void update_char_data_thread_1(int start, int end, unsigned char *data_);
+    void update_char_data_thread_2(int start, int end, unsigned char *data_);
 
-struct RGB24
+    void update_color_data();
+    void update_color_data_thread(int start, int end);
+
+    void convert_image(IMAGE_TYPE new_type);
+    void convert_thread(IMAGE_TYPE new_type, int start, int end);
+
+    std::vector<std::vector<unsigned int>> get_histogram();
+
+    void to_gray();
+    void to_gray(float r_ratio, float g_ratio, float b_ratio);
+    void to_gray_thread(int start, int end, float r_ratio, float g_ratio, float b_ratio);
+
+    uint8_t* get_gray() const;
+    uint8_t* get_gray(float r_ratio, float g_ratio, float b_ratio) const;
+
+    uint8_t* get_gray_3() const;
+    uint8_t* get_gray_3(float r_ratio, float g_ratio, float b_ratio) const;
+
+    uint8_t* get_char_data_copy() const;
+
+    uint8_t* get_channel(IMAGE_CHANNEL chan);
+
+    void save_as_ppm(const std::string& pathname);
+};
+
+struct rgb24
 {
     uint8_t r;
     uint8_t g;
     uint8_t b;
 };
 
-/**
- * Gray scale image with pixels on 8 bits.
- * @author J. Fabrizio
-*/
-class gray8_image {
-
-  public:
-            /**
-             * Image creation and allocation.
-             * @param sx width of the image in pixel
-             * @param sy height of the image in pixel
-            */
-            gray8_image(int sx, int sy);
-            ~gray8_image();
-
-            /**
-             * Gives the pixel buffer aligned according to TL_IMAGE_ALIGNMENT
-             * macro.
-             * @return the pixel buffer.
-             */
-             const GRAY8& get_buffer() const;
-
-            /**
-             * Gives the pixel buffer aligned according to TL_IMAGE_ALIGNMENT
-             * macro.
-             * @return the pixel buffer.
-             */
-            GRAY8& get_buffer();
-
-  public:
-            /**Width of the image in pixels.*/
-            int sx;
-            /**Height of the image in pixels.*/
-            int sy;
-            /**Size of the reserved area in bytes.*/
-            int length;
-            /**Buffer*/
-            GRAY8 pixels;
-    };
-
-
-/**
- * Color image with pixels on 3*8 bits.
- * @author J. Fabrizio
-*/
-class rgb24_image {
-
-        public:
-            /**
-             * Image creation and allocation.
-             * @param sx width of the image in pixel
-             * @param sy height of the image in pixel
-            */
-            rgb24_image(int sx, int sy);
-            rgb24_image(const gray8_image& r, const gray8_image& g, const gray8_image& b);
-            rgb24_image(const gray8_image& gray);
-            ~rgb24_image();
-
-            /**
-             * Gives the pixel buffer aligned according to TL_IMAGE_ALIGNMENT
-             * macro.
-             * @return the pixel buffer.
-             */
-            const RGB8& get_buffer() const;
-
-            /**
-             * Gives the pixel buffer aligned according to TL_IMAGE_ALIGNMENT
-             * macro.
-             * @return the pixel buffer.
-             */
-            RGB8& get_buffer();
-
-    public:
-            /**Width of the image in pixels.*/
-            int sx;
-            /**Height of the image in pixels.*/
-            int sy;
-            /**Size of the reserved area in bytes.*/
-            int length;
-            /**Buffer*/
-            RGB8 pixels;
-
-            gray8_image get_channel(int j) const;
-            gray8_image get_red_channel() const;
-            gray8_image get_green_channel() const;
-            gray8_image get_blue_channel() const;
-};
-
-void convert_hsv(uint8_t* r_, uint8_t* g_, uint8_t* b_);
-void convert_rgb(uint8_t* h_, uint8_t* s_, uint8_t* v_);
-gray8_image *rgb_to_gray(const rgb24_image& rgb);
-
-
-class hsv24_image {
-
-        public:
-            /**
-             * Image creation and allocation.
-             * @param sx width of the image in pixel
-             * @param sy height of the image in pixel
-            */
-            hsv24_image(int sx, int sy);
-            hsv24_image(const gray8_image& r, const gray8_image& g, const gray8_image& b);
-            ~hsv24_image();
-
-            /**
-             * Gives the pixel buffer aligned according to TL_IMAGE_ALIGNMENT
-             * macro.
-             * @return the pixel buffer.
-             */
-            const HSV8& get_buffer() const;
-
-            /**
-             * Gives the pixel buffer aligned according to TL_IMAGE_ALIGNMENT
-             * macro.
-             * @return the pixel buffer.
-             */
-            HSV8& get_buffer();
-
-    public:
-            /**Width of the image in pixels.*/
-            int sx;
-            /**Height of the image in pixels.*/
-            int sy;
-            /**Size of the reserved area in bytes.*/
-            int length;
-            /**Buffer*/
-            HSV8 pixels;
-
-            gray8_image get_channel(int j) const;
-            gray8_image get_hue_channel() const;
-            gray8_image get_saturation_channel() const;
-            gray8_image get_value_channel() const;
-};
-
-}
-#endif	/* IMAGE_HH */
+Image *load_image(const std::string& path_name);
