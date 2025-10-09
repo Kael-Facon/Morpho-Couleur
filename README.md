@@ -4,7 +4,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/Kael-Facon/Morpho-Couleur/">
-    <img src="images/morpho_color.webp" alt="Morpho-Color"> <!-- width="80" height="80"> -->
+    <img src="data/morpho_color.webp" alt="Morpho-Color"> <!-- width="80" height="80"> -->
   </a>
 </div>
 
