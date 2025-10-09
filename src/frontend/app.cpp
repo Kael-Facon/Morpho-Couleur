@@ -30,7 +30,10 @@ void App::Windows()
         env.change_image();
         env.render();
     }
-//    ImGui::SameLine();
+    string text = to_string(index_image + 1) + " / " + to_string(NB_IMAGES);
+    ImGui::SameLine();
+    ImGui::Text(text.c_str());
+//    ImGui::SameLine();d
 //    if (ImGui::Button("Demo"))
 //    {
 //        demo = !demo;
