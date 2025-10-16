@@ -46,7 +46,7 @@ The project is in CPP and the interface has been developped with IMGUI/OPGL/GLFW
 
 ## Getting Started
 
-This project has been developped on Windows10 and Linux and should theorically work on both. (Not tested on MacOs)
+This project has been developped on Windows10 and Linux and should work on both. (Not tested on MacOs)
 
 ### Prerequisites
 
