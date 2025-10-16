@@ -1,5 +1,5 @@
 <a id="readme-top"></a>
-# TIFO-Morpho-Color
+# Mathematical Color Morphology
 
 <br />
 <div align="center">
@@ -11,7 +11,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-Project carried out in the 2nd year of the engineering cycle at Epita for the “Fundamental Image Processing” (TIFO stands for "Traitement d'Image Fondamentale") subject. The aim of this project was to propose solutions for the approach to mathematical morphology in color.
+The aim of this project was to propose solutions for the approach to mathematical morphology in color.
 
 This project presents various classical mathematical morphology operations such as:
 * Erosion
